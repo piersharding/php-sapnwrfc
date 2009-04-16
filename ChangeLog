@@ -1,0 +1,9 @@
+Sat Jan 24 06:29:39 NZDT 2009
+  * making sure that the RFC call handle gets destroyed when an error is
+  raised
+  * flesh out config.m4 a bit to cater for the other operating systems
+
+Tue Feb 10 18:59:24 NZDT 2009
+  * added activate/deactivate on RFC parameters
+  * added raise exceptions  sapnwrfcConnException, and sapnwrfcCallException
+    for Connection and RFC call runtime exceptions.
