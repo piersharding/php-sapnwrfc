@@ -7,3 +7,8 @@ Tue Feb 10 18:59:24 NZDT 2009
   * added activate/deactivate on RFC parameters
   * added raise exceptions  sapnwrfcConnException, and sapnwrfcCallException
     for Connection and RFC call runtime exceptions.
+
+Thu Aug 27 09:50:26 NZST 2009
+  * added function sapnwrfc_removefunction()
+  * fixed some issues with throwing errors
+  Thanks for the help from Joachim Dorner

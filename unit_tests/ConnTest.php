@@ -1,17 +1,14 @@
 <?php
 require_once 'PHPUnit/Framework.php';
 require_once '../sap_config.php';
-global $SAP_CONFIG, $SAPNWRFC_LOADED; 
+dl("sapnwrfc.so");
+global $SAP_CONFIG;
 
 class ConnTest extends PHPUnit_Framework_TestCase
 {
 
     protected function setUp() {
-        global $SAPNWRFC_LOADED, $SAP_CONFIG;
-        if (empty($SAPNWRFC_LOADED)) {
-            dl("sapnwrfc.so");
-            $SAPNWRFC_LOADED = true;
-        }
+        global $SAP_CONFIG;
         $yaml = file_get_contents($SAP_CONFIG);
         $this->config = syck_load($yaml);
         echo "sapnwrfc version: ".sapnwrfc_version()."\n";
@@ -36,7 +33,7 @@ class ConnTest extends PHPUnit_Framework_TestCase
             // we must have a valid connection
             $this->assertNotNull($conn);
             $attr = $conn->connection_attributes();
-            $this->assertEquals($attr['partnerHost'], 'ubuntu');
+            $this->assertEquals($attr['partnerHost'], 'gecko');
         }
         catch (Exception $e) {
             echo "Exception message: ".$e->getMessage();
@@ -51,7 +48,7 @@ class ConnTest extends PHPUnit_Framework_TestCase
             $this->assertNotNull($conn);
             for ($i=0; $i<100; $i++) {
                 $attr = $conn->connection_attributes();
-                $this->assertEquals($attr['partnerHost'], 'ubuntu');
+                $this->assertEquals($attr['partnerHost'], 'gecko');
             }
         }
         catch (Exception $e) {
@@ -67,7 +64,7 @@ class ConnTest extends PHPUnit_Framework_TestCase
                 // we must have a valid connection
                 $this->assertNotNull($conn);
                 $attr = $conn->connection_attributes();
-                $this->assertEquals($attr['partnerHost'], 'ubuntu');
+                $this->assertEquals($attr['partnerHost'], 'gecko');
                 $this->assertNotNull($conn->close());
             }
         }

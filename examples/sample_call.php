@@ -2,7 +2,7 @@
 dl("sapnwrfc.so");
 echo "sapnwrfc version: ".sapnwrfc_version()."\n";
 echo "nw rfc sdk version: ".sapnwrfc_rfcversion()."\n";
-$config = array('ashost' => 'ubuntu.local.net',
+$config = array('ashost' => 'gecko.local.net',
                 'sysnr' => "01",
                 'client' => "001",
                 'user' => 'developer',
@@ -15,16 +15,18 @@ try {
     $conn = new sapnwrfc($config);
     $fds = $conn->function_lookup("STFC_DEEP_STRUCTURE");
     $fdt = $conn->function_lookup("STFC_DEEP_TABLE");
-    $parms = array('IMPORTSTRUCT' => array('I' => 123, 'C' => 'AbCdEf', 'STR' => 'The quick brown fox ...'));
+    //$parms = array('IMPORTSTRUCT' => array('I' => 123, 'C' => 'AbCdEf', 'STR' => 'The quick brown fox ...'));
+    $parms = array('IMPORTSTRUCT' => array('I' => 123, 'C' => 123, 'STR' => 'The quick brown fox ...'));
+    //$parms = array('IMPORTSTRUCT' => array('I' => 123, 'C' => 'AbCdEf', 'STR' => 1));
     $results = $fds->invoke($parms);
-    var_dump($results);
-    $parms = array('IMPORT_TAB' => array(array('I' => 123, 'C' => 'AbCdEf', 'STR' => 'The quick brown fox ...')));
-    $results = $fdt->invoke($parms);
-    var_dump($results);
+    //var_dump($results);
+    //$parms = array('IMPORT_TAB' => array(array('I' => 123, 'C' => 'AbCdEf', 'STR' => 'The quick brown fox ...')));
+    //$results = $fdt->invoke($parms);
+    //var_dump($results);
     $conn->close();
 }
 catch (Exception $e) {
-    var_dump($e);
+    //var_dump($e);
     echo "Exception message: ".$e->getMessage();
     throw new Exception('Assertion failed.');
 }

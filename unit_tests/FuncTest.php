@@ -1,17 +1,14 @@
 <?php
 require_once 'PHPUnit/Framework.php';
 require_once '../sap_config.php';
-global $SAP_CONFIG, $SAPNWRFC_LOADED; 
+dl("sapnwrfc.so");
+global $SAP_CONFIG;
 
 class FuncTest extends PHPUnit_Framework_TestCase
 {
 
     protected function setUp() {
-        global $SAPNWRFC_LOADED, $SAP_CONFIG;
-        if (empty($SAPNWRFC_LOADED)) {
-            dl("sapnwrfc.so");
-            $SAPNWRFC_LOADED = true;
-        }
+        global $SAP_CONFIG;
         $yaml = file_get_contents($SAP_CONFIG);
         $this->config = syck_load($yaml);
         echo "sapnwrfc version: ".sapnwrfc_version()."\n";
