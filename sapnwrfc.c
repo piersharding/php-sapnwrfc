@@ -351,7 +351,7 @@ static void SAPNW_rfc_call_error(char *msg, int code, zval *key, zval *message) 
     zval    *call_ex;
 
     TSRMLS_FETCH();
-	php_set_error_handling(EH_THROW, zend_exception_get_default(EXTSRM) TSRMLS_CC);
+	zend_replace_error_handling(EH_THROW, zend_exception_get_default(EXTSRM), NULL TSRMLS_CC);
     MAKE_STD_ZVAL(call_ex);
     object_init_ex(call_ex, sapnwrfc_call_exception_ce);
 	zend_update_property_string(sapnwrfc_call_exception_ce, call_ex, "message", sizeof("message") - 1, Z_STRVAL_P(message) TSRMLS_CC);
@@ -359,7 +359,7 @@ static void SAPNW_rfc_call_error(char *msg, int code, zval *key, zval *message) 
     zend_update_property_long(sapnwrfc_call_exception_ce, call_ex, "code", sizeof("code") - 1, code TSRMLS_CC);
     zend_throw_exception_object(call_ex TSRMLS_CC);
 	sapnwrfc_global_error = true;
-	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+	zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
 }
 
 
@@ -367,7 +367,7 @@ static void SAPNW_rfc_call_error1(char * msg, char * part1) {
     zval    *call_ex;
 
     TSRMLS_FETCH();
-	php_set_error_handling(EH_THROW, zend_exception_get_default(EXTSRM) TSRMLS_CC);
+	zend_replace_error_handling(EH_THROW, zend_exception_get_default(EXTSRM), NULL TSRMLS_CC);
     MAKE_STD_ZVAL(call_ex);
     object_init_ex(call_ex, sapnwrfc_call_exception_ce);
 	zend_update_property_string(sapnwrfc_call_exception_ce, call_ex, "message", sizeof("message") - 1, my_concatc2c(msg, part1) TSRMLS_CC);
@@ -375,7 +375,7 @@ static void SAPNW_rfc_call_error1(char * msg, char * part1) {
     zend_update_property_long(sapnwrfc_call_exception_ce, call_ex, "code", sizeof("code") - 1, 0 TSRMLS_CC);
     zend_throw_exception_object(call_ex TSRMLS_CC);
 	sapnwrfc_global_error = true;
-	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+	zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
 }
 
 
@@ -1141,10 +1141,10 @@ void set_char_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value, uns
     	SAPNW_rfc_call_error1("RfcSetChar invalid Input value type: ", Z_STRVAL_P(u16to8(name)));
 		return;
 	}
-	if (Z_STRLEN_P(value) > max) {
-		SAPNW_rfc_call_error1("RfcSetChar string too long: ", Z_STRVAL_P(u16to8(name)));
-		return;
-	}
+//	if (Z_STRLEN_P(value) > max) {
+//		SAPNW_rfc_call_error1("RfcSetChar string too long: ", Z_STRVAL_P(u16to8(name)));
+//		return;
+//	}
 
 	p_value = u8to16(value);
 	rc = RfcSetChars(hcont, name, p_value, strlenU(p_value), &errorInfo);
@@ -1669,10 +1669,6 @@ static void sapnwrfc_function_object_free_storage(void *object TSRMLS_DC) {
 
 	sapnwrfc_function_object *intern = (sapnwrfc_function_object *)object;
 
-	zend_hash_destroy(intern->std.properties);
-	FREE_HASHTABLE(intern->std.properties);
-
-
 	if (intern->handle != NULL) {
 		//  fprintf(stderr, "func_desc_handle_free: -> start %p\n", ptr);
 		rc = RfcDestroyFunctionDesc(intern->handle, &errorInfo);
@@ -1687,6 +1683,10 @@ static void sapnwrfc_function_object_free_storage(void *object TSRMLS_DC) {
 		intern->handle = NULL;
 		intern->conn_handle = NULL;
 	}
+
+	zend_hash_destroy(intern->std.properties);
+	FREE_HASHTABLE(intern->std.properties);
+
 	efree(object);
 }
 /* }}} */
@@ -1933,7 +1933,7 @@ static zend_class_entry *sapnwrfc_get_ce(zval *object TSRMLS_DC)
 
 /* {{{ proto void sapnwrfc::__construct(string path)
  Cronstructs a new RFC connection object. */
-/* php_set_error_handling() is used to throw exceptions in case
+/* zend_replace_error_handling() is used to throw exceptions in case
    the constructor fails. Here we use this to ensure the object
    has a valid directory resource.
 
@@ -1946,23 +1946,23 @@ PHP_METHOD(sapnwrfc, __construct) {
 	zval *connection_parameters;
 	long len;
 
-	php_set_error_handling(EH_THROW, zend_exception_get_default(EXTSRM) TSRMLS_CC);
+	zend_replace_error_handling(EH_THROW, zend_exception_get_default(EXTSRM), NULL TSRMLS_CC);
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &connection_parameters, &len) == FAILURE) {
-		php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+		zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
 		return;
 	}
 
 	// must be an array
 	if (Z_TYPE_P(connection_parameters) != IS_ARRAY) {
-		php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+		zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
 		return;
 	}
 
 	intern = (sapnwrfc_object*)zend_object_store_get_object(object TSRMLS_CC);
 	sapnwrfc_open(intern, connection_parameters TSRMLS_CC);
 
-	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+	zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
 }
 /* }}} */
 
@@ -1977,7 +1977,7 @@ PHP_METHOD(sapnwrfc, connection_attributes) {
 	RFC_ERROR_INFO errorInfo;
 	RFC_RC rc = RFC_OK;
 
-	php_set_error_handling(EH_THROW, zend_exception_get_default(EXTSRM) TSRMLS_CC);
+	zend_replace_error_handling(EH_THROW, zend_exception_get_default(EXTSRM), NULL TSRMLS_CC);
 
 	rc = RfcGetConnectionAttributes(intern->handle, &attribs, &errorInfo);
 	/* bail on a bad return code */
@@ -2012,7 +2012,7 @@ PHP_METHOD(sapnwrfc, connection_attributes) {
 	add_assoc_zval(return_value, "cpicConvId", u16to8(attribs.cpicConvId));
 	add_assoc_zval(return_value, "progName", u16to8(attribs.progName));
 
-	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+	zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
 }
 /* }}} */
 
@@ -2026,7 +2026,7 @@ PHP_METHOD(sapnwrfc, close) {
 	RFC_ERROR_INFO errorInfo;
 	RFC_RC rc = RFC_OK;
 
-	php_set_error_handling(EH_THROW, zend_exception_get_default(EXTSRM) TSRMLS_CC);
+	zend_replace_error_handling(EH_THROW, zend_exception_get_default(EXTSRM), NULL TSRMLS_CC);
 
 	if (intern->handle != NULL) {
 		rc = RfcCloseConnection(intern->handle, &errorInfo);
@@ -2040,7 +2040,7 @@ PHP_METHOD(sapnwrfc, close) {
 		}
 	}
 
-	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+	zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
 	RETURN_TRUE;
 }
 /* }}} */
@@ -2121,10 +2121,10 @@ PHP_METHOD(sapnwrfc, function_lookup) {
 
 	sapnwrfc_object *intern = (sapnwrfc_object*)zend_object_store_get_object(object TSRMLS_CC);
 
-	php_set_error_handling(EH_THROW, zend_exception_get_default(EXTSRM) TSRMLS_CC);
+	zend_replace_error_handling(EH_THROW, zend_exception_get_default(EXTSRM), NULL TSRMLS_CC);
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &function_name, &len) == FAILURE) {
-		php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+		zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
 		return;
 	}
 
@@ -2173,7 +2173,7 @@ PHP_METHOD(sapnwrfc, function_lookup) {
 		add_property_bool(return_value, Z_STRVAL_P(u16to8(parm_desc.name)), TRUE);
 	}
 
-	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+	zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
 }
 /* }}} */
 
@@ -2181,7 +2181,7 @@ PHP_METHOD(sapnwrfc, function_lookup) {
 
 /* {{{ proto void sapnwrfc_function::__construct(string path)
  Cronstructs a new RFC connection object. */
-/* php_set_error_handling() is used to throw exceptions in case
+/* zend_replace_error_handling() is used to throw exceptions in case
    the constructor fails. Here we use this to ensure the object
    has a valid directory resource.
 
@@ -2221,18 +2221,18 @@ PHP_METHOD(sapnwrfc_function, invoke) {
 
 	sapnwrfc_function_object *intern = (sapnwrfc_function_object*)zend_object_store_get_object(object TSRMLS_CC);
 
-	php_set_error_handling(EH_THROW, zend_exception_get_default(EXTSRM) TSRMLS_CC);
+	zend_replace_error_handling(EH_THROW, zend_exception_get_default(EXTSRM), NULL TSRMLS_CC);
 
 	sapnwrfc_global_error = false;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &function_parameters, &len) == FAILURE) {
-		php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+		zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
 		return;
 	}
 
 	// must be an array
 	if (Z_TYPE_P(function_parameters) != IS_ARRAY) {
-		php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+		zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
 		return;
 	}
 
@@ -2452,7 +2452,7 @@ PHP_METHOD(sapnwrfc_function, invoke) {
 		RETURN_NULL();
 	}
 
-	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+	zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
 }
 /* }}} */
 
@@ -2471,10 +2471,10 @@ PHP_METHOD(sapnwrfc_function, activate) {
 
 	intern = (sapnwrfc_function_object*)zend_object_store_get_object(object TSRMLS_CC);
 
-	php_set_error_handling(EH_THROW, zend_exception_get_default(EXTSRM) TSRMLS_CC);
+	zend_replace_error_handling(EH_THROW, zend_exception_get_default(EXTSRM), NULL TSRMLS_CC);
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &parm_name, &len) == FAILURE) {
-		php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+		zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
 		return;
 	}
 
@@ -2493,7 +2493,7 @@ PHP_METHOD(sapnwrfc_function, activate) {
 
 	zend_update_property_bool(sapnwrfc_function_ce, object, parm_name, strlen(parm_name), TRUE TSRMLS_CC);
 
-	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+	zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
 
 	RETURN_TRUE;
 }
@@ -2513,10 +2513,10 @@ PHP_METHOD(sapnwrfc_function, deactivate) {
 
 	intern = (sapnwrfc_function_object*)zend_object_store_get_object(object TSRMLS_CC);
 
-	php_set_error_handling(EH_THROW, zend_exception_get_default(EXTSRM) TSRMLS_CC);
+	zend_replace_error_handling(EH_THROW, zend_exception_get_default(EXTSRM), NULL TSRMLS_CC);
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &parm_name, &len) == FAILURE) {
-		php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+		zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
 		return;
 	}
 
@@ -2535,7 +2535,7 @@ PHP_METHOD(sapnwrfc_function, deactivate) {
 
 	zend_update_property_bool(sapnwrfc_function_ce, object, parm_name, strlen(parm_name), FALSE TSRMLS_CC);
 
-	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+	zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
 
 	RETURN_TRUE;
 }
@@ -2597,10 +2597,10 @@ PHP_FUNCTION(sapnwrfc_setinipath) {
 	SAP_UC * pname;
 	RFC_RC rc;
 
-	php_set_error_handling(EH_THROW, zend_exception_get_default(EXTSRM) TSRMLS_CC);
+	zend_replace_error_handling(EH_THROW, zend_exception_get_default(EXTSRM), NULL TSRMLS_CC);
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &ini_path, &len) == FAILURE) {
-		php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+		zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
 		return;
 	}
 
@@ -2624,7 +2624,7 @@ PHP_FUNCTION(sapnwrfc_reloadinifile) {
 	RFC_ERROR_INFO errorInfo;
 	RFC_RC rc;
 
-	php_set_error_handling(EH_THROW, zend_exception_get_default(EXTSRM) TSRMLS_CC);
+	zend_replace_error_handling(EH_THROW, zend_exception_get_default(EXTSRM), NULL TSRMLS_CC);
 
 	rc = RfcReloadIniFile(&errorInfo);
 	if (rc != RFC_OK) {
@@ -2650,10 +2650,10 @@ PHP_FUNCTION(sapnwrfc_removefunction) {
 	SAP_UC * pname;
 	RFC_RC rc;
 
-	php_set_error_handling(EH_THROW, zend_exception_get_default(EXTSRM) TSRMLS_CC);
+	zend_replace_error_handling(EH_THROW, zend_exception_get_default(EXTSRM), NULL TSRMLS_CC);
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &sysid, &len_sysid, &name, &len_name) == FAILURE) {
-		php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+		zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
 		return;
 	}
 	if (len_name < 1) {

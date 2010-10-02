@@ -15,14 +15,12 @@ try {
     $conn = new sapnwrfc($config);
     $fds = $conn->function_lookup("STFC_DEEP_STRUCTURE");
     $fdt = $conn->function_lookup("STFC_DEEP_TABLE");
-    //$parms = array('IMPORTSTRUCT' => array('I' => 123, 'C' => 'AbCdEf', 'STR' => 'The quick brown fox ...'));
-    $parms = array('IMPORTSTRUCT' => array('I' => 123, 'C' => 123, 'STR' => 'The quick brown fox ...'));
-    //$parms = array('IMPORTSTRUCT' => array('I' => 123, 'C' => 'AbCdEf', 'STR' => 1));
+    $parms = array('IMPORTSTRUCT' => array('I' => 123, 'C' => 'AbCdEf', 'STR' => 'The quick brown fox ...'));
     $results = $fds->invoke($parms);
-    //var_dump($results);
-    //$parms = array('IMPORT_TAB' => array(array('I' => 123, 'C' => 'AbCdEf', 'STR' => 'The quick brown fox ...')));
-    //$results = $fdt->invoke($parms);
-    //var_dump($results);
+    var_dump($results);
+    $parms = array('IMPORT_TAB' => array(array('I' => 123, 'C' => 'AbCdEf', 'STR' => 'The quick brown fox ...')));
+    $results = $fdt->invoke($parms);
+    var_dump($results);
     $conn->close();
 }
 catch (Exception $e) {

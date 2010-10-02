@@ -1,7 +1,8 @@
 <?php
 require_once 'PHPUnit/Framework.php';
 require_once '../sap_config.php';
-dl("sapnwrfc.so");
+require_once 'spyc.php';
+//dl("sapnwrfc.so");
 global $SAP_CONFIG;
 
 class SSOTest extends PHPUnit_Framework_TestCase
@@ -9,8 +10,7 @@ class SSOTest extends PHPUnit_Framework_TestCase
 
     protected function setUp() {
         global $SAP_CONFIG;
-        $yaml = file_get_contents($SAP_CONFIG);
-        $this->config = syck_load($yaml);
+        $this->config = Spyc::YAMLLoad($SAP_CONFIG);
         echo "sapnwrfc version: ".sapnwrfc_version()."\n";
         echo "nw rfc sdk version: ".sapnwrfc_rfcversion()."\n";
     }
