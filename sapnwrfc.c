@@ -2542,7 +2542,7 @@ PHP_METHOD(sapnwrfc_function, deactivate) {
 
 
 #define SAPNWRFC_VERSION_MAJOR	0
-#define SAPNWRFC_VERSION_MINOR	9
+#define SAPNWRFC_VERSION_MINOR	10
 
 /* {{{ proto bool sapnwrfc_version()
  Retrieve sapnwrfc version */
