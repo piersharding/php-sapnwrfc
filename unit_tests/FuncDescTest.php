@@ -3,7 +3,7 @@ require_once 'PHPUnit/Framework.php';
 require_once '../sap_config.php';
 require_once 'spyc.php';
 global $SAP_CONFIG;
-//dl("sapnwrfc.so");
+dl("sapnwrfc.so");
 
 class FuncDescTest extends PHPUnit_Framework_TestCase
 {

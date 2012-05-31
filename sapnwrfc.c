@@ -212,9 +212,9 @@ zval* u16to8(SAP_UC * str) {
 	char * utf8;
 	zval * php_str;
 
-	utf8Size = strlenU(str) * 2;
-	utf8 = malloc(utf8Size + 1);
-	memset(utf8, 0, utf8Size + 1);
+	utf8Size = strlenU(str) * 4;
+	utf8 = malloc(utf8Size + 2);
+	memset(utf8, 0, utf8Size + 2);
 	resultLength = 0;
 	rc = RfcSAPUCToUTF8(str, strlenU(str), (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
 	MAKE_STD_ZVAL( php_str );
@@ -231,9 +231,9 @@ zval* u16to8c(SAP_UC * str, int len) {
 	char * utf8;
 	zval * php_str;
 
-	utf8Size = len * 2;
-	utf8 = malloc(utf8Size + 1);
-	memset(utf8, 0, utf8Size + 1);
+	utf8Size = len * 4;
+	utf8 = malloc(utf8Size + 2);
+	memset(utf8, 0, utf8Size + 2);
 	resultLength = 0;
 	rc = RfcSAPUCToUTF8(str, len, (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
 	MAKE_STD_ZVAL( php_str );
@@ -246,10 +246,10 @@ zval* u16to8c(SAP_UC * str, int len) {
 static void * make_space(int len){
 
     char * ptr;
-    ptr = malloc( len + 1 );
+    ptr = malloc( len + 2 );
     if ( ptr == NULL )
 	    return NULL;
-    memset(ptr, 0, len + 1);
+    memset(ptr, 0, len + 2);
     return ptr;
 }
 
@@ -530,7 +530,7 @@ static zval * get_string_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 	if (strLen == 0)
 		return make_empty();
 
-	buffer = make_space(strLen*2 + 2);
+	buffer = make_space(strLen*4);
 	rc = RfcGetString(hcont, name, (SAP_UC *)buffer, strLen + 2, &retStrLen, &errorInfo);
 	if (rc != RFC_OK) {
 		SAPNW_rfc_call_error(my_concatc2c("Problem with RfcGetString: ",
@@ -597,7 +597,7 @@ static zval * get_num_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, unsigned 
 	char * buffer;
 	zval * val;
 
-	buffer = make_space(ulen*2+1); /* seems that you need 2 null bytes to terminate a string ...*/
+	buffer = make_space(ulen*2); /* seems that you need 2 null bytes to terminate a string ...*/
 	rc = RfcGetNum(hcont, name, (RFC_NUM *)buffer, ulen, &errorInfo);
 	if (rc != RFC_OK) {
 		SAPNW_rfc_call_error(my_concatc2c("Problem with RfcGetNum: ",
@@ -652,7 +652,7 @@ static zval * get_char_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, unsigned
 	char * buffer;
 	zval * val;
 
-	buffer = make_space(ulen*2+1); /* seems that you need 2 null bytes to terminate a string ...*/
+	buffer = make_space(ulen*4); /* seems that you need 2 null bytes to terminate a string ...*/
 
 	rc = RfcGetChars(hcont, name, (RFC_CHAR *)buffer, ulen, &errorInfo);
 	if (rc != RFC_OK) {
@@ -2542,7 +2542,7 @@ PHP_METHOD(sapnwrfc_function, deactivate) {
 
 
 #define SAPNWRFC_VERSION_MAJOR	0
-#define SAPNWRFC_VERSION_MINOR	10
+#define SAPNWRFC_VERSION_MINOR	11
 
 /* {{{ proto bool sapnwrfc_version()
  Retrieve sapnwrfc version */

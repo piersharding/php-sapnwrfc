@@ -1,5 +1,5 @@
 #!/bin/sh
-BASE=/home/piers/workspace/sapnwrfc
+BASE=/home/piers/git/public/php-sapnwrfc
 MAJ=`grep 'define SAPNWRFC_VERSION_MAJOR' sapnwrfc.c | awk '{print $3}'`
 MIN=`grep 'define SAPNWRFC_VERSION_MINOR' sapnwrfc.c | perl -ne '@x=split(/\s+/, $_);print sprintf("%02d",pop(@x));'`
 VERS=$MAJ.$MIN
@@ -64,5 +64,5 @@ fi
 echo "Done."
 
 echo "Copy up distribution"
-scp $BALL ompka.net:www/download/php/sapnwrfc/
-scp $ZIP ompka.net:www/download/php/sapnwrfc/
+scp $BALL piersharding.com:www/download/php/sapnwrfc/
+scp $ZIP piersharding.com:www/download/php/sapnwrfc/
