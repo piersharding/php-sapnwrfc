@@ -1715,7 +1715,11 @@ static zend_object_value sapnwrfc_function_object_new_ex(zend_class_entry *class
 
 	ALLOC_HASHTABLE(intern->std.properties);
 	zend_hash_init(intern->std.properties, 0, NULL, ZVAL_PTR_DTOR, 0);
+	#if PHP_VERSION_ID < 50399
 	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
+    #else
+    object_properties_init(&(intern->std), class_type);
+    #endif
 
 	retval.handle = zend_objects_store_put(intern, NULL, (zend_objects_free_object_storage_t) sapnwrfc_function_object_free_storage, NULL TSRMLS_CC);
 	retval.handlers = &sapnwrfc_function_handlers;
@@ -1819,7 +1823,11 @@ static zend_object_value sapnwrfc_object_new_ex(zend_class_entry *class_type, sa
 
 	ALLOC_HASHTABLE(intern->std.properties);
 	zend_hash_init(intern->std.properties, 0, NULL, ZVAL_PTR_DTOR, 0);
+	#if PHP_VERSION_ID < 50399
 	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
+    #else
+    object_properties_init(&(intern->std), class_type);
+    #endif
 
 	retval.handle = zend_objects_store_put(intern, NULL, (zend_objects_free_object_storage_t) sapnwrfc_object_free_storage, NULL TSRMLS_CC);
 	retval.handlers = &sapnwrfc_handlers;
@@ -2687,7 +2695,7 @@ ZEND_DECLARE_MODULE_GLOBALS(sapnwrfc)
  *
  * Every user visible function must have an entry in sapnwrfc_functions[].
  */
-function_entry sapnwrfc_functions[] = {
+zend_function_entry sapnwrfc_functions[] = {
 	PHP_FE(sapnwrfc_version,       NULL)
 	PHP_FE(sapnwrfc_version_array, NULL)
 	PHP_FE(sapnwrfc_rfcversion,    NULL)
