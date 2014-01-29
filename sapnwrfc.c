@@ -2126,6 +2126,7 @@ PHP_METHOD(sapnwrfc, function_lookup) {
 	RFC_PARAMETER_DESC parm_desc;
 	unsigned parm_count;
 	int i;
+	zval *array;
 
 	sapnwrfc_object *intern = (sapnwrfc_object*)zend_object_store_get_object(object TSRMLS_CC);
 
@@ -2178,7 +2179,14 @@ PHP_METHOD(sapnwrfc, function_lookup) {
 							   u16to8(errorInfo.message));
 			RETURN_NULL();
 		}
-		add_property_bool(return_value, Z_STRVAL_P(u16to8(parm_desc.name)), TRUE);
+		MAKE_STD_ZVAL(array);
+		array_init(array);
+		add_assoc_string(array,"type",Z_STRVAL_P(u16to8(RfcGetTypeAsString(parm_desc.type))),TRUE);
+		add_assoc_string(array,"direction",Z_STRVAL_P(u16to8(RfcGetDirectionAsString(parm_desc.direction))),TRUE);
+		add_assoc_string(array,"description",Z_STRVAL_P(u16to8(parm_desc.parameterText)),TRUE);
+		add_assoc_bool(array,"optional",parm_desc.optional);
+		add_assoc_string(array,"defaultValue",Z_STRVAL_P(u16to8(parm_desc.defaultValue)),TRUE);
+		add_property_zval(return_value,Z_STRVAL_P(u16to8(parm_desc.name)),array);
 	}
 
 	zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
