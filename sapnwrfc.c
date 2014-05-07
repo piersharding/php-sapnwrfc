@@ -95,7 +95,7 @@ PHP_METHOD(sapnwrfc_function, deactivate);
 
 /* declare method parameters */
 /* supply a name and default to call by parameter */
-#if (PHP_MAJOR_VERSION == 5 & PHP_MINOR_VERSION < 3) 
+#if (PHP_MAJOR_VERSION == 5 & PHP_MINOR_VERSION < 3)
 static
 #endif
 ZEND_BEGIN_ARG_INFO(arginfo_sapnwrfc___construct, 0)
@@ -176,7 +176,7 @@ typedef struct _sapnwrfc_call_exception_class_object {
 
 
 SAP_UC * u8to16c(char * str) {
-	RFC_RC rc;
+	// RFC_RC rc;
 	RFC_ERROR_INFO errorInfo;
 	SAP_UC *sapuc;
 	unsigned sapucSize, resultLength;
@@ -185,13 +185,14 @@ SAP_UC * u8to16c(char * str) {
 	sapuc = mallocU(sapucSize);
 	memsetU(sapuc, 0, sapucSize);
 	resultLength = 0;
-	rc = RfcUTF8ToSAPUC((RFC_BYTE *)str, strlen(str), sapuc, &sapucSize, &resultLength, &errorInfo);
+	// rc = RfcUTF8ToSAPUC((RFC_BYTE *)str, strlen(str), sapuc, &sapucSize, &resultLength, &errorInfo);
+	RfcUTF8ToSAPUC((RFC_BYTE *)str, strlen(str), sapuc, &sapucSize, &resultLength, &errorInfo);
 	return sapuc;
 }
 
 
 SAP_UC * u8to16(zval *str) {
-	RFC_RC rc;
+	// RFC_RC rc;
 	RFC_ERROR_INFO errorInfo;
 	SAP_UC *sapuc;
 	unsigned sapucSize, resultLength;
@@ -200,13 +201,14 @@ SAP_UC * u8to16(zval *str) {
 	sapuc = mallocU(sapucSize);
 	memsetU(sapuc, 0, sapucSize);
 	resultLength = 0;
-	rc = RfcUTF8ToSAPUC((RFC_BYTE *)Z_STRVAL_P(str), Z_STRLEN_P(str), sapuc, &sapucSize, &resultLength, &errorInfo);
+	// rc = RfcUTF8ToSAPUC((RFC_BYTE *)Z_STRVAL_P(str), Z_STRLEN_P(str), sapuc, &sapucSize, &resultLength, &errorInfo);
+	RfcUTF8ToSAPUC((RFC_BYTE *)Z_STRVAL_P(str), Z_STRLEN_P(str), sapuc, &sapucSize, &resultLength, &errorInfo);
 	return sapuc;
 }
 
 
 zval* u16to8(SAP_UC * str) {
-	RFC_RC rc;
+	// RFC_RC rc;
 	RFC_ERROR_INFO errorInfo;
 	unsigned utf8Size, resultLength;
 	char * utf8;
@@ -216,7 +218,8 @@ zval* u16to8(SAP_UC * str) {
 	utf8 = malloc(utf8Size + 2);
 	memset(utf8, 0, utf8Size + 2);
 	resultLength = 0;
-	rc = RfcSAPUCToUTF8(str, strlenU(str), (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
+	// rc = RfcSAPUCToUTF8(str, strlenU(str), (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
+	RfcSAPUCToUTF8(str, strlenU(str), (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
 	MAKE_STD_ZVAL( php_str );
 	ZVAL_STRINGL( php_str, utf8, resultLength, TRUE );
 	free(utf8);
@@ -225,7 +228,7 @@ zval* u16to8(SAP_UC * str) {
 
 
 zval* u16to8c(SAP_UC * str, int len) {
-	RFC_RC rc;
+	// RFC_RC rc;
 	RFC_ERROR_INFO errorInfo;
 	unsigned utf8Size, resultLength;
 	char * utf8;
@@ -235,7 +238,8 @@ zval* u16to8c(SAP_UC * str, int len) {
 	utf8 = malloc(utf8Size + 2);
 	memset(utf8, 0, utf8Size + 2);
 	resultLength = 0;
-	rc = RfcSAPUCToUTF8(str, len, (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
+	// rc = RfcSAPUCToUTF8(str, len, (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
+	RfcSAPUCToUTF8(str, len, (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
 	MAKE_STD_ZVAL( php_str );
 	ZVAL_STRINGL( php_str, (char*)utf8, resultLength, TRUE );
 	free(utf8);
@@ -1341,7 +1345,7 @@ void set_structure_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value
 	RFC_TYPE_DESC_HANDLE typeHandle;
 	RFC_FIELD_DESC fieldDesc;
 	SAP_UC *p_name;
-	int idx, i;
+	int i;
 	zval **data;
 	HashTable *arr_hash;
 	HashPosition pointer;
@@ -1355,7 +1359,7 @@ void set_structure_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value
 	}
 
 	arr_hash = Z_ARRVAL_P(value);
-	idx = zend_hash_num_elements(arr_hash);
+	// idx = zend_hash_num_elements(arr_hash);
 
 	rc = RfcGetStructure(hcont, name, &line, &errorInfo);
 	if (rc != RFC_OK) {
@@ -1483,7 +1487,7 @@ void set_table_line(RFC_STRUCTURE_HANDLE line, zval * value){
 	RFC_TYPE_DESC_HANDLE typeHandle;
 	RFC_FIELD_DESC fieldDesc;
 	SAP_UC * p_name;
-	int idx, i;
+	int i;
 	zval **data;
 	HashTable *arr_hash;
 	HashPosition pointer;
@@ -1497,7 +1501,7 @@ void set_table_line(RFC_STRUCTURE_HANDLE line, zval * value){
 		return;
 	}
 	arr_hash = Z_ARRVAL_P(value);
-	idx = zend_hash_num_elements(arr_hash);
+	// idx = zend_hash_num_elements(arr_hash);
 
 	typeHandle = RfcDescribeType(line, &errorInfo);
 	if (typeHandle == NULL) {
@@ -1706,7 +1710,6 @@ static void sapnwrfc_function_object_free_storage(void *object TSRMLS_DC) {
 static zend_object_value sapnwrfc_function_object_new_ex(zend_class_entry *class_type, sapnwrfc_function_object **obj TSRMLS_DC) {
 	zend_object_value retval;
 	sapnwrfc_function_object *intern;
-	zval *tmp;
 
 	intern = emalloc(sizeof(sapnwrfc_function_object));
 	memset(intern, 0, sizeof(sapnwrfc_function_object));
@@ -1814,7 +1817,6 @@ static void sapnwrfc_object_free_storage(void *object TSRMLS_DC) {
 static zend_object_value sapnwrfc_object_new_ex(zend_class_entry *class_type, sapnwrfc_object **obj TSRMLS_DC) {
 	zend_object_value retval;
 	sapnwrfc_object *intern;
-	zval *tmp;
 
 	intern = emalloc(sizeof(sapnwrfc_object));
 	memset(intern, 0, sizeof(sapnwrfc_object));
@@ -2181,8 +2183,8 @@ PHP_METHOD(sapnwrfc, function_lookup) {
 		}
 		MAKE_STD_ZVAL(array);
 		array_init(array);
-		add_assoc_string(array,"type",Z_STRVAL_P(u16to8(RfcGetTypeAsString(parm_desc.type))),TRUE);
-		add_assoc_string(array,"direction",Z_STRVAL_P(u16to8(RfcGetDirectionAsString(parm_desc.direction))),TRUE);
+		add_assoc_string(array,"type",Z_STRVAL_P(u16to8((SAP_UC *) RfcGetTypeAsString(parm_desc.type))),TRUE);
+		add_assoc_string(array,"direction",Z_STRVAL_P(u16to8((SAP_UC *) RfcGetDirectionAsString(parm_desc.direction))),TRUE);
 		add_assoc_string(array,"description",Z_STRVAL_P(u16to8(parm_desc.parameterText)),TRUE);
 		add_assoc_bool(array,"optional",parm_desc.optional);
 		add_assoc_string(array,"defaultValue",Z_STRVAL_P(u16to8(parm_desc.defaultValue)),TRUE);
