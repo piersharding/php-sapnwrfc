@@ -40,6 +40,9 @@ dnl append to the array which has been dynamically chosen at m4 time
       dnl sort out the unix flag
       my_extra_flags=" -D_LARGEFILE_SOURCE -mno-3dnow -fno-strict-aliasing -pipe -fexceptions -funsigned-char -Wall -Wno-uninitialized -Wno-long-long -Wcast-align -DSAPwithUNICODE -DSAPonUNIX -D__NO_MATH_INLINES -fPIC -DSAPwithTHREADS"
       case "$host" in
+        s390x-ibm-linux)
+            my_extra_flags=" -D_LARGEFILE_SOURCE -mno-3dnow -fno-strict-aliasing -pipe -fexceptions -funsigned-char -Wall -Wno-uninitialized -Wno-long-long -Wcast-align -DSAPwithUNICODE -DSAPonUNIX -D__NO_MATH_INLINES -fPIC -DSAPwithTHREADS"
+            ;;
         *-linux-*)
             my_extra_flags=" -D_LARGEFILE_SOURCE -mno-3dnow -fno-strict-aliasing -pipe -fexceptions -funsigned-char -Wall -Wno-uninitialized -Wno-long-long -Wcast-align -DSAPwithUNICODE -DSAPonUNIX -D__NO_MATH_INLINES -fPIC -DSAPwithTHREADS"
             ;;
