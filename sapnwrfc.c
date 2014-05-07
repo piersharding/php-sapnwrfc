@@ -388,7 +388,7 @@ static zval * get_time_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 	RFC_RC rc = RFC_OK;
 	RFC_ERROR_INFO errorInfo;
 	RFC_TIME timeBuff;
-	zval * val;
+	zval * val = NULL;
 
 	rc = RfcGetTime(hcont, name, timeBuff, &errorInfo);
 	if (rc != RFC_OK) {
@@ -410,7 +410,7 @@ static zval * get_date_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 	RFC_RC rc = RFC_OK;
 	RFC_ERROR_INFO errorInfo;
 	RFC_DATE dateBuff;
-	zval * val;
+	zval * val = NULL;
 
 	rc = RfcGetDate(hcont, name, dateBuff, &errorInfo);
 	if (rc != RFC_OK) {
@@ -432,7 +432,7 @@ static zval * get_int_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 	RFC_RC rc = RFC_OK;
 	RFC_ERROR_INFO errorInfo;
 	RFC_INT rfc_int;
-	zval * val;
+	zval * val = NULL;
 
 	rc = RfcGetInt(hcont, name, &rfc_int, &errorInfo);
 	if (rc != RFC_OK) {
@@ -453,7 +453,7 @@ static zval * get_int1_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 	RFC_RC rc = RFC_OK;
 	RFC_ERROR_INFO errorInfo;
 	RFC_INT1 rfc_int1;
-	zval * val;
+	zval * val = NULL;
 
 	rc = RfcGetInt1(hcont, name, &rfc_int1, &errorInfo);
 	if (rc != RFC_OK) {
@@ -474,7 +474,7 @@ static zval * get_int2_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 	RFC_RC rc = RFC_OK;
 	RFC_ERROR_INFO errorInfo;
 	RFC_INT2 rfc_int2;
-	zval * val;
+	zval * val = NULL;
 
 	rc = RfcGetInt2(hcont, name, &rfc_int2, &errorInfo);
 	if (rc != RFC_OK) {
@@ -495,7 +495,7 @@ static zval * get_float_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 	RFC_RC rc = RFC_OK;
 	RFC_ERROR_INFO errorInfo;
 	RFC_FLOAT rfc_float;
-	zval * val;
+	zval * val = NULL;
 
 	rc = RfcGetFloat(hcont, name, &rfc_float, &errorInfo);
 	if (rc != RFC_OK) {
@@ -515,7 +515,7 @@ static zval * get_string_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 
 	RFC_RC rc = RFC_OK;
 	RFC_ERROR_INFO errorInfo;
-	zval * val;
+	zval * val= NULL;
 	unsigned strLen, retStrLen;
 	char * buffer;
 
@@ -556,7 +556,7 @@ static zval * get_xstring_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 
 	RFC_RC rc = RFC_OK;
 	RFC_ERROR_INFO errorInfo;
-	zval * val;
+	zval * val= NULL;
 	unsigned strLen, retStrLen;
 	char * buffer;
 
@@ -599,7 +599,7 @@ static zval * get_num_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, unsigned 
 	RFC_RC rc = RFC_OK;
 	RFC_ERROR_INFO errorInfo;
 	char * buffer;
-	zval * val;
+	zval * val = NULL;
 
 	buffer = make_space(ulen*2); /* seems that you need 2 null bytes to terminate a string ...*/
 	rc = RfcGetNum(hcont, name, (RFC_NUM *)buffer, ulen, &errorInfo);
@@ -623,7 +623,7 @@ static zval * get_bcd_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 
 	RFC_RC rc = RFC_OK;
 	RFC_ERROR_INFO errorInfo;
-	zval * val;
+	zval * val = NULL;
 	unsigned strLen, retStrLen;
 	char * buffer;
 
@@ -654,7 +654,7 @@ static zval * get_char_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, unsigned
 	RFC_RC rc = RFC_OK;
 	RFC_ERROR_INFO errorInfo;
 	char * buffer;
-	zval * val;
+	zval * val = NULL;
 
 	buffer = make_space(ulen*4); /* seems that you need 2 null bytes to terminate a string ...*/
 
@@ -680,7 +680,7 @@ static zval * get_byte_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, unsigned
 	RFC_RC rc = RFC_OK;
 	RFC_ERROR_INFO errorInfo;
 	char * buffer;
-	zval * val;
+	zval * val = NULL;
 
 	buffer = make_space(len);
 	rc = RfcGetBytes(hcont, name, (SAP_RAW *)buffer, len, &errorInfo);
@@ -708,7 +708,7 @@ static zval * get_structure_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 	RFC_TYPE_DESC_HANDLE typeHandle;
 	RFC_FIELD_DESC fieldDesc;
 	unsigned fieldCount, i;
-	zval * val;
+	zval * val= NULL;
 
 	rc = RfcGetStructure(hcont, name, &line, &errorInfo);
 	if (rc != RFC_OK) {
@@ -847,7 +847,7 @@ static zval * get_table_line(RFC_STRUCTURE_HANDLE line){
 	RFC_TYPE_DESC_HANDLE typeHandle;
 	RFC_FIELD_DESC fieldDesc;
 	unsigned fieldCount, i;
-	zval * val;
+	zval * val = NULL;
 
 	typeHandle = RfcDescribeType(line, &errorInfo);
 	if (typeHandle == NULL) {
@@ -894,7 +894,7 @@ static zval * get_table_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 
 	RFC_RC rc = RFC_OK;
 	RFC_ERROR_INFO errorInfo;
-	zval * val;
+	zval * val = NULL;
 	unsigned tabLen, r;
 	RFC_STRUCTURE_HANDLE line;
 
@@ -931,7 +931,7 @@ static zval * get_parameter_value(zval * name, RFC_FUNCTION_HANDLE funcHandle, R
 	RFC_TABLE_HANDLE tableHandle;
 	RFC_PARAMETER_DESC paramDesc;
 	SAP_UC *p_name;
-	zval * pvalue;
+	zval * pvalue = NULL;
 
 	/* get the parameter description */
 	rc = RfcGetParameterDescByName(funcDescHandle, (p_name = u8to16(name)), &paramDesc, &errorInfo);
@@ -1710,6 +1710,7 @@ static void sapnwrfc_function_object_free_storage(void *object TSRMLS_DC) {
 static zend_object_value sapnwrfc_function_object_new_ex(zend_class_entry *class_type, sapnwrfc_function_object **obj TSRMLS_DC) {
 	zend_object_value retval;
 	sapnwrfc_function_object *intern;
+	zval *tmp = NULL;
 
 	intern = emalloc(sizeof(sapnwrfc_function_object));
 	memset(intern, 0, sizeof(sapnwrfc_function_object));
@@ -1817,6 +1818,7 @@ static void sapnwrfc_object_free_storage(void *object TSRMLS_DC) {
 static zend_object_value sapnwrfc_object_new_ex(zend_class_entry *class_type, sapnwrfc_object **obj TSRMLS_DC) {
 	zend_object_value retval;
 	sapnwrfc_object *intern;
+	zval *tmp = NULL;
 
 	intern = emalloc(sizeof(sapnwrfc_object));
 	memset(intern, 0, sizeof(sapnwrfc_object));
@@ -2087,7 +2089,7 @@ PHP_METHOD(sapnwrfc, get_sso_ticket) {
 
 	RFC_ERROR_INFO errorInfo;
 	RFC_RC rc = RFC_OK;
-	SAP_UC * ssoTicket;
+	SAP_UC * ssoTicket = NULL;
 	unsigned length;
 
 	sapnwrfc_global_error = false;
