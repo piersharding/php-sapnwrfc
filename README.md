@@ -1,3 +1,4 @@
+```
   +----------------------------------------------------------------------+
   | PHP Version 5                                                        |
   +----------------------------------------------------------------------+
@@ -7,18 +8,19 @@
   +----------------------------------------------------------------------+
   | Author: Piers Harding <piers@ompka.net>                              |
   +----------------------------------------------------------------------+
+```
 
-
-== Summary
+# Summary
 
 Welcome to the sapnwrfc PHP package.  This package is intended to facilitate RFC calls to an SAP R/3 system of release NW2004x and above.  It may work for earlier versions but it hasn't been tested.
 The fundamental purpose of the production of this package, is to provide a clean object oriented interface to RFC calls from within PHP.  This will hopefully have a number of effects:
-(1) make it really easy to do RFC calls to SAP from PHP in an object oriented fashion (Doh!)
-(2) promote PHP as the interface/scripting/glue language of choice for interaction with SAP R/3.
-(3) make the combination of Linux, Apache, and PHP the killer app for internet connectivity with SAP.
-(4) Establish a small fun open source project that people are more than welcome to contribute to, if they so wish.
 
-== Installation
+*  make it really easy to do RFC calls to SAP from PHP in an object oriented fashion (Doh!)
+*  promote PHP as the interface/scripting/glue language of choice for interaction with SAP R/3.
+*  make the combination of Linux, Apache, and PHP the killer app for internet connectivity with SAP.
+*  Establish a small fun open source project that people are more than welcome to contribute to, if they so wish.
+
+# Installation
 
 Please see the INSTALL file
 
