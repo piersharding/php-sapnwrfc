@@ -70,7 +70,7 @@ void set_table_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value);
 
 
 /* declare the class entry */
-extern zend_class_entry *zend_ce_iterator;
+extern PHPAPI zend_class_entry *zend_ce_iterator;
 
 #ifdef HAVE_SPL
 extern PHPAPI zend_class_entry *spl_ce_RuntimeException;
