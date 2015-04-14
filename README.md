@@ -46,7 +46,8 @@ use sapnwrfc;
 use sapnwrfcConnectionException;
 use sapnwrfcCallException;
 
-//when using a message server
+// see parameters here: http://help.sap.com/saphelp_nwpi711/helpdata/en/48/c7bb09da5e31ebe10000000a42189b/content.htm
+// example when using a message server
 $config = [
     'MSHOST' => '...',
     
@@ -72,12 +73,6 @@ try {
     // do something!
 }
 
-/**
- * ping the server
- * @return boolean
- */
-$conn->ping();
-
 if($conn->ping() === true){
     //call a real method
     try {
@@ -94,3 +89,169 @@ if($conn->ping() === true){
 }
 ```
 
+# Documentation
+
+## Hint: change log directory
+The sapnwrfc will create a logfile, if you enable `TRACE` 
+It will by default use the current working dir. You can view your with `getcwd()`
+
+If you want to log it in the directory where you have your logfiles, just change the directory when you connect
+```php
+$cwd = getcwd();
+chdir('../your/log/folder');
+try {
+    $conn = new sapnwrfc($config);
+} catch(sapnwrfcConnectionException $ex){
+    // do something! e.g. log it
+}
+chdir($cwd); //change the cwd back to the previous value
+```
+
+## Functions and classes
+A list of all available functions/methods and their parameters + return values
+
+```php
+<?php
+
+/**
+ * Get the version of this module
+ * 
+ * @return string
+ */
+function sapnwrfc_version()
+{}
+
+/**
+ * Get the version of this module
+ * Array keys: major, minor, cvs, ver
+ *
+ * @return array
+ */
+function sapnwrfc_version_array()
+{}
+
+/**
+ * Get the sapnwrfc version
+ *
+ * @return string
+ */
+function sapnwrfc_rfcversion()
+{}
+
+/**
+ * Set the ini file path for the RFC SDK
+ *
+ * @param string $path            
+ * @return boolean
+ */
+function sapnwrfc_setinipath($path)
+{}
+
+/**
+ * Reload the INI file for the NW RFC SDK
+ *
+ * @return boolean
+ */
+function sapnwrfc_reloadinifile()
+{}
+
+/**
+ * Remove a function description from the cache RFC SDK
+ *
+ * @param string $systemId            
+ * @param string $functionName            
+ *
+ * @return boolean
+ */
+function sapnwrfc_removefunction($systemId = '', $functionName)
+{}
+
+/**
+ * Connect exception
+ */
+class sapnwrfcConnectionException extends Exception
+{
+    // @ todo define the error codes here
+}
+
+/**
+ * Call exception
+ */
+class sapnwrfcCallException extends Exception
+{
+    // @ todo define the error codes here
+}
+
+/**
+ * Connection class
+ */
+class sapnwrfc
+{
+
+    /**
+     * Create a connection with SAP NW RFC
+     *
+     * @see http://help.sap.com/saphelp_nwpi711/helpdata/en/48/c7bb09da5e31ebe10000000a42189b/content.htm
+     * @param array $config            
+     * @throws sapnwrfcConnectionException
+     */
+    public function __construct(array $config);
+
+    /**
+     * Get the used connection parameters
+     *
+     * @return array
+     */
+    public function connection_attributes();
+
+    /**
+     *
+     * @return boolean
+     */
+    public function close();
+
+    /**
+     * Is the server around?
+     *
+     * @return boolean
+     */
+    public function ping();
+
+    /**
+     * Get the SSO ticket
+     *
+     * @return string
+     */
+    public function get_sso_ticket();
+
+    /**
+     *
+     * @param string $functionName            
+     * @throws sapnwrfcConnectionException
+     * @throws sapnwrfcCallException
+     *
+     * @return sapnwrfc_function
+     */
+    public function function_lookup($functionName);
+}
+
+/**
+ * Function call class
+ */
+class sapnwrfc_function
+{
+    public function __construct();
+    
+    /**
+     * 
+     * @param array $parameters
+     * @return array
+     */
+    public function invoke(array $parameters);
+    
+    public function activate($parameterName);
+    
+    public function deactivate($parameterName);
+    
+}
+```
