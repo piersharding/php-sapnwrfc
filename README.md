@@ -26,4 +26,71 @@ Please see the INSTALL file
 
 For Windows, some precompiled binaries have been supplied by chemik3 (https://github.com/chemik3 - thanks!) available at: https://sourceforge.net/projects/saprfcsapnwrfc/files/?source=navbar
 
+## Check installation
+
+should list the module after installation
+```cli
+php -m 
+```
+
+Display the installed versions
+```php
+var_dump(sapnwrfc_version());
+var_dump(sapnwrfc_rfcversion());
+```
+
+# Getting started
+
+```php
+use sapnwrfc;
+use sapnwrfcConnectionException;
+use sapnwrfcCallException;
+
+//when using a message server
+$config = [
+    'MSHOST' => '...',
+    
+    'CLIENT' => '...',
+    
+    'R3NAME' => '...',
+    'GROUP' => '...',
+    
+    'CODEPAGE' => '...',
+    
+    'LANG' => 'en',
+    
+    'LCHECK' => true,
+    'TRACE' => true,
+    
+    'user' => '...',
+    'passwd' => '...'
+];
+
+try {
+    $conn = new sapnwrfc($config);
+} catch(sapnwrfcConnectionException $ex){
+    // do something!
+}
+
+/**
+ * ping the server
+ * @return boolean
+ */
+$conn->ping();
+
+if($conn->ping() === true){
+    //call a real method
+    try {
+        $func = $conn->function_lookup('RFC_PING');
+        
+        /**
+         * Call the function and return the result
+         * @return array
+         */
+        $result = $func->invoke([]);
+    } catch (sapnwrfcCallException $ex){
+        // do something
+    }
+}
+```
 
