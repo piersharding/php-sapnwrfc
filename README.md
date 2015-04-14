@@ -171,6 +171,7 @@ function sapnwrfc_removefunction($systemId = '', $functionName)
  */
 class sapnwrfcConnectionException extends Exception
 {
+    // @ todo define the error codes here
 }
 
 /**
@@ -178,6 +179,7 @@ class sapnwrfcConnectionException extends Exception
  */
 class sapnwrfcCallException extends Exception
 {
+    // @ todo define the error codes here
 }
 
 /**
