@@ -4,10 +4,8 @@ require_once '../sap_config.php';
 require_once 'spyc.php';
 dl("sapnwrfc.so");
 global $SAP_CONFIG;
-
 class ConnTest extends PHPUnit_Framework_TestCase
 {
-
     protected function setUp() {
         global $SAP_CONFIG;
         $this->config = Spyc::YAMLLoad($SAP_CONFIG);
