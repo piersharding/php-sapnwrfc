@@ -22,9 +22,11 @@ The fundamental purpose of the production of this package, is to provide a clean
 
 # Installation
 
-Please see the INSTALL file
+Please refer [INSTALL.md](INSTALL.md)
 
-For Windows, some precompiled binaries have been supplied by chemik3 (https://github.com/chemik3 - thanks!) available at: https://sourceforge.net/projects/saprfcsapnwrfc/files/?source=navbar
+For Windows, some precompiled binaries have been supplied by chemik3 (https://github.com/chemik3 - thanks!) available at 
+- https://sourceforge.net/projects/saprfcsapnwrfc/files/?source=navbar
+
 
 ## Check installation
 
