@@ -14,7 +14,11 @@ class AbstractOnlineTestCase extends PHPUnit_Framework_TestCase
             $this->markTestSkipped('Configuration file for a SAP testsystem required "tests/connection.config.php"');
         }
         
-        $this->config = file_get_contents('tests/connection.config.php');
+        $this->config = include 'tests/connection.config.php';
+        
+        if (! is_array($this->config)) {
+            throw new \Exception('config needs to be an array!');
+        }
     }
 
     protected function getConfig()
