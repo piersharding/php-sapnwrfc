@@ -3,7 +3,7 @@ namespace SapNwRfc;
 
 use PHPUnit_Framework_TestCase;
 
-class ConnectionTest extends PHPUnit_Framework_TestCase
+class FunctionTest extends PHPUnit_Framework_TestCase
 {
 
     public function testVersion()
@@ -59,20 +59,28 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
      *
      * @expectedException \Exception
      */
-    public function testRemoveFunctionException()
+    public function testRemoveFunctionNoParameterException()
     {
-        $actual = sapnwrfc_removefunction();
+        $actual = sapnwrfc_removefunction('');
     }
-    
+
     /**
      * Missing parameter
      *
      * @expectedException \Exception
      */
-    public function testRemoveFunctionException2()
+    public function testRemoveFunctionOnlyOneParameterException()
     {
-        $actual = sapnwrfc_removefunction('RC', '123');
-        var_dump($actual);
-        exit();
+        $actual = sapnwrfc_removefunction('');
+    }
+
+    /**
+     * Missing parameter
+     */
+    public function testRemoveFunction()
+    {
+        $actual = sapnwrfc_removefunction('', 'RFC_READ_REPORT');
+        
+        $this->assertTrue($actual);
     }
 }

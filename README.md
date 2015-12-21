@@ -34,14 +34,20 @@ The fundamental purpose of the production of this package, is to provide a clean
 
 Please see [INSTALL.md](INSTALL.md)
 
+
 ### Check if it works
 
 #### Listed as module?
+
+Should list `sapnwrfc` in the extension list
+
 ```
 php -m 
 ```
 
+
 #### Display the installed versions
+
 ```php
 var_dump(sapnwrfc_version());
 var_dump(sapnwrfc_rfcversion());
