@@ -1,8 +1,0 @@
-ashost: nplhost
-sysnr: "42"
-client: "001"
-user: developer
-passwd: developer
-lang: EN
-trace: 1
-loglevel: warn
