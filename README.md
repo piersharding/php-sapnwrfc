@@ -273,8 +273,14 @@ class sapnwrfc_function
      */
     public function invoke(array $parameters);
     
+    /**
+     * @param string $parameterName
+     */
     public function activate($parameterName);
     
+    /**
+     * @param string $parameterName
+     */
     public function deactivate($parameterName);
     
 }
