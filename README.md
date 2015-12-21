@@ -1,3 +1,6 @@
+
+# SAPNWRFC extension for PHP
+
 ```
   +----------------------------------------------------------------------+
   | PHP Version 7                                                        |
@@ -16,7 +19,7 @@
   +----------------------------------------------------------------------+
 ```
 
-# Summary
+## Summary
 
 Welcome to the sapnwrfc PHP package.  This package is intended to facilitate RFC calls to an SAP R/3 system of release NW2004x and above.  It may work for earlier versions but it hasn't been tested.
 The fundamental purpose of the production of this package, is to provide a clean object oriented interface to RFC calls from within PHP.  This will hopefully have a number of effects:
@@ -26,28 +29,33 @@ The fundamental purpose of the production of this package, is to provide a clean
 *  make the combination of Linux, Apache, and PHP the killer app for internet connectivity with SAP.
 *  Establish a small fun open source project that people are more than welcome to contribute to, if they so wish.
 
-# Installation
 
-Please refer [INSTALL.md](INSTALL.md)
+## Installation
 
-For Windows, some precompiled binaries have been supplied by chemik3 (https://github.com/chemik3 - thanks!) available at 
-- https://sourceforge.net/projects/saprfcsapnwrfc/files/?source=navbar
+Please see [INSTALL.md](INSTALL.md)
 
+### Check if it works
 
-## Check installation
-
-should list the module after installation
-```cli
+#### Listed as module?
+```
 php -m 
 ```
 
-Display the installed versions
+#### Display the installed versions
 ```php
 var_dump(sapnwrfc_version());
 var_dump(sapnwrfc_rfcversion());
 ```
 
-# Getting started
+#### Execute unit tests
+
+If you have downloaded the complete repository and you have `phpunit` installed globaly, you can execute from this repo root directory
+```
+phpunit
+```
+
+
+## Getting started
 
 ```php
 use sapnwrfc;
@@ -97,9 +105,10 @@ if($conn->ping() === true){
 }
 ```
 
-# Documentation
+## Documentation
 
-## Hint: change log directory
+### Hint: change the log directory
+
 The sapnwrfc will create a logfile, if you enable `TRACE` 
 It will by default use the current working dir. You can view your with `getcwd()`
 
@@ -115,7 +124,8 @@ try {
 chdir($cwd); //change the cwd back to the previous value
 ```
 
-## Functions and classes
+### Functions and classes
+
 A list of all available functions/methods and their parameters + return values
 
 ```php
