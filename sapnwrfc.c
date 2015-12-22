@@ -146,7 +146,6 @@ typedef struct _sapnwrfc_call_exception_class_object {
 
 
 SAP_UC * u8to16c(char * str) {
-	// RFC_RC rc;
 	RFC_ERROR_INFO errorInfo;
 	SAP_UC *sapuc;
 	unsigned sapucSize, resultLength;
@@ -155,7 +154,7 @@ SAP_UC * u8to16c(char * str) {
 	sapuc = mallocU(sapucSize);
 	memsetU(sapuc, 0, sapucSize);
 	resultLength = 0;
-	// rc = RfcUTF8ToSAPUC((RFC_BYTE *)str, strlen(str), sapuc, &sapucSize, &resultLength, &errorInfo);
+	
 	RfcUTF8ToSAPUC((RFC_BYTE *)str, strlen(str), sapuc, &sapucSize, &resultLength, &errorInfo);
 	
 	return sapuc;
@@ -163,7 +162,6 @@ SAP_UC * u8to16c(char * str) {
 
 
 SAP_UC * u8to16(zval *str) {
-	// RFC_RC rc;
 	RFC_ERROR_INFO errorInfo;
 	SAP_UC *sapuc;
 	unsigned sapucSize, resultLength;
@@ -172,7 +170,7 @@ SAP_UC * u8to16(zval *str) {
 	sapuc = mallocU(sapucSize);
 	memsetU(sapuc, 0, sapucSize);
 	resultLength = 0;
-	// rc = RfcUTF8ToSAPUC((RFC_BYTE *)Z_STRVAL_P(str), Z_STRLEN_P(str), sapuc, &sapucSize, &resultLength, &errorInfo);
+	
 	RfcUTF8ToSAPUC((RFC_BYTE *)Z_STRVAL_P(str), Z_STRLEN_P(str), sapuc, &sapucSize, &resultLength, &errorInfo);
 	
 	return sapuc;
@@ -180,7 +178,6 @@ SAP_UC * u8to16(zval *str) {
 
 
 zval* u16to8(SAP_UC * str) {
-	// RFC_RC rc;
 	RFC_ERROR_INFO errorInfo;
 	unsigned utf8Size, resultLength;
 	char * utf8;
@@ -190,8 +187,9 @@ zval* u16to8(SAP_UC * str) {
 	utf8 = malloc(utf8Size + 2);
 	memset(utf8, 0, utf8Size + 2);
 	resultLength = 0;
-	// rc = RfcSAPUCToUTF8(str, strlenU(str), (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
+	
 	RfcSAPUCToUTF8(str, strlenU(str), (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
+	
 	MAKE_STD_ZVAL( php_str );
 	ZVAL_STRINGL( php_str, utf8, resultLength, TRUE );
 	free(utf8);
@@ -201,7 +199,6 @@ zval* u16to8(SAP_UC * str) {
 
 
 zval* u16to8c(SAP_UC * str, int len) {
-	// RFC_RC rc;
 	RFC_ERROR_INFO errorInfo;
 	unsigned utf8Size, resultLength;
 	char * utf8;
@@ -211,8 +208,9 @@ zval* u16to8c(SAP_UC * str, int len) {
 	utf8 = malloc(utf8Size + 2);
 	memset(utf8, 0, utf8Size + 2);
 	resultLength = 0;
-	// rc = RfcSAPUCToUTF8(str, len, (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
+
 	RfcSAPUCToUTF8(str, len, (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
+	
 	MAKE_STD_ZVAL( php_str );
 	ZVAL_STRINGL( php_str, (char*)utf8, resultLength, TRUE );
 	free(utf8);
@@ -577,9 +575,10 @@ static zval * get_xstring_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 	}
 
 	/* bail out if string is empty */
-	if (strLen == 0)
+	if (strLen == 0) {
 		return make_empty();
-
+    }
+    
 	buffer = make_space(strLen);
 	rc = RfcGetXString(hcont, name, (SAP_RAW *)buffer, strLen, &retStrLen, &errorInfo);
 	if (rc != RFC_OK) {
@@ -655,7 +654,7 @@ static zval * get_bcd_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 	val = u16to8c((SAP_UC *)buffer, retStrLen);
 	free(buffer);
 	// XXX need to convert this to a float
-	
+
 	return val;
 }
 
@@ -680,6 +679,7 @@ static zval * get_char_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, unsigned
 		
 		return val;
 	}
+	
 	val = u16to8((SAP_UC *)buffer);
 	free(buffer);
 
@@ -834,6 +834,7 @@ static zval * get_field_value(DATA_CONTAINER_HANDLE hcont, RFC_FIELD_DESC fieldD
 										u16to8(errorInfo.key),
 										u16to8(errorInfo.message));
 			ZVAL_NULL(pvalue);
+			
 			return pvalue;
 		  }
 		  pvalue = get_table_value(tableHandle, fieldDesc.name);
@@ -1446,7 +1447,6 @@ void set_structure_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value
 	}
 
 	arr_hash = Z_ARRVAL_P(value);
-	// idx = zend_hash_num_elements(arr_hash);
 
 	rc = RfcGetStructure(hcont, name, &line, &errorInfo);
 	if (rc != RFC_OK) {
@@ -1598,7 +1598,6 @@ void set_table_line(RFC_STRUCTURE_HANDLE line, zval * value){
 	}
 	
 	arr_hash = Z_ARRVAL_P(value);
-	// idx = zend_hash_num_elements(arr_hash);
 
 	typeHandle = RfcDescribeType(line, &errorInfo);
 	if (typeHandle == NULL) {
@@ -1788,7 +1787,6 @@ static void sapnwrfc_function_object_free_storage(void *object TSRMLS_DC) {
 	sapnwrfc_function_object *intern = (sapnwrfc_function_object *)object;
 
 	if (intern->handle != NULL) {
-		//  fprintf(stderr, "func_desc_handle_free: -> start %p\n", ptr);
 		rc = RfcDestroyFunctionDesc(intern->handle, &errorInfo);
 		intern->handle = NULL;
 		if (rc != RFC_OK) {
@@ -1993,9 +1991,8 @@ static void sapnwrfc_open(sapnwrfc_object* intern, zval *connection_parameters T
 		convert_to_string_ex(data);
 		loginParams[i].name = (SAP_UC *) u8to16c(str_index);
 		loginParams[i].value = (SAP_UC *) u8to16(*data);
-//	            PHPWRITE(Z_STRVAL_PP(data), Z_STRLEN_PP(data));
-//	            php_printf(" ");
-		 i++;
+		
+        i++;
 	}
 	
 	intern->handle = RfcOpenConnection(loginParams, idx, &errorInfo);
@@ -2073,12 +2070,14 @@ PHP_METHOD(sapnwrfc, __construct) {
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &connection_parameters, &len) == FAILURE) {
 		zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
+		
 		return;
 	}
 
 	// must be an array
 	if (Z_TYPE_P(connection_parameters) != IS_ARRAY) {
 		zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
+		
 		return;
 	}
 
@@ -2211,9 +2210,9 @@ PHP_METHOD(sapnwrfc, get_sso_ticket) {
 	sapnwrfc_global_error = false;
 
 	if (intern->handle != NULL) {
-		 //DECL_EXP RFC_RC SAP_API RfcGetPartnerSSOTicket(RFC_CONNECTION_HANDLE rfcHandle, SAP_UC *ssoTicket, unsigned *length, RFC_ERROR_INFO* errorInfo);
 
 		rc = RfcGetPartnerSSOTicket(intern->handle, ssoTicket, &length, &errorInfo);
+		
 		if (rc != RFC_OK) {
 			SAPNW_rfc_conn_error("Problem in RfcGetPartnerSSOTicket: ",
 							   errorInfo.code,
@@ -2222,7 +2221,7 @@ PHP_METHOD(sapnwrfc, get_sso_ticket) {
 			RETURN_NULL();
 		}
 	} else {
-		  RETURN_NULL();
+        RETURN_NULL();
 	}
 	
 	RETURN_STRING(Z_STRVAL_P(u16to8c(ssoTicket, length)), 1);
@@ -2588,10 +2587,6 @@ PHP_METHOD(sapnwrfc_function, invoke) {
 
 	rc = RfcDestroyFunction(func_handle, &errorInfo);
 	if (rc != RFC_OK) {
-//		fprintfU(stderr, cU("RfcDestroyFunction: %d - %s - %s\n"),
-//							 errorInfo.code,
-//							 u16to8(errorInfo.key),
-//							 u16to8(errorInfo.message));
 		SAPNW_rfc_call_error("Problem destroying RfcDestroyFunction handle",
 							errorInfo.code,
 							u16to8(errorInfo.key),
@@ -2808,7 +2803,7 @@ PHP_FUNCTION(sapnwrfc_removefunction) {
 	}
 	
 	if (len_name < 1) {
-	  SAPNW_rfc_call_error1("Incorrect parameters supplied for remove_function ", "");
+        SAPNW_rfc_call_error1("Incorrect parameters supplied for remove_function ", "");
     }
     
 	rc = RfcRemoveFunctionDesc(NULL, (pname = u8to16c(name)), &errorInfo);
@@ -2822,11 +2817,12 @@ PHP_FUNCTION(sapnwrfc_removefunction) {
 	free((char *)pname);
 	
 	if (rc != RFC_OK) {
-	  SAPNW_rfc_call_error("Problem removing function description from the cache ",
+        SAPNW_rfc_call_error("Problem removing function description from the cache ",
 							errorInfo.code,
 							u16to8(errorInfo.key),
 							u16to8(errorInfo.message));
-	  RETURN_NULL();
+        
+        RETURN_NULL();
 	}
 
 	RETURN_TRUE;
