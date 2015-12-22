@@ -24,6 +24,8 @@ You must obtain and install the NW RFC SDK from SAP for this extension to work.
 
 Please follow OSS note 1056472, 1058327, 1236530
 
+See also https://help.sap.com/saphelp_46c/helpdata/de/22/042887488911d189490000e829fbbd/content.htm?frameset=/de/22/04287a488911d189490000e829fbbd/frameset.htm&current_toc=/de/22/0438e7488911d189490000e829fbbd/plain.htm&node_id=7
+
 
 ### Build static into PHP
 

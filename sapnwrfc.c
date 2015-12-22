@@ -16,6 +16,8 @@
   +----------------------------------------------------------------------+
 */
 
+/* $Id$ */
+
 //	DECL_EXP RFC_RC SAP_API RfcGetPartnerSNCName(RFC_CONNECTION_HANDLE rfcHandle, SAP_UC *sncName, unsigned length, RFC_ERROR_INFO* errorInfo);
 //	DECL_EXP RFC_RC SAP_API RfcGetPartnerSNCKey(RFC_CONNECTION_HANDLE rfcHandle, SAP_RAW *sncKey, unsigned *length, RFC_ERROR_INFO* errorInfo);
 //	DECL_EXP RFC_RC SAP_API RfcSNCNameToKey(SAP_UC const *sncLib, SAP_UC const *sncName, SAP_RAW *sncKey, unsigned *keyLength, RFC_ERROR_INFO* errorInfo);
@@ -82,7 +84,10 @@ extern PHPAPI zend_class_entry *zend_ce_iterator;
 extern PHPAPI zend_class_entry *spl_ce_RuntimeException;
 #endif
 
-typedef enum { false, true } mybool;
+typedef enum { 
+    false, 
+    true 
+} mybool;
 
 mybool sapnwrfc_global_error;
 
@@ -101,9 +106,6 @@ PHP_METHOD(sapnwrfc_function, deactivate);
 
 /* declare method parameters */
 /* supply a name and default to call by parameter */
-#if (PHP_MAJOR_VERSION == 5 & PHP_MINOR_VERSION < 3)
-static
-#endif
 ZEND_BEGIN_ARG_INFO(arginfo_sapnwrfc___construct, 0)
 ZEND_ARG_INFO(0, connection_parameters)  /* parameter name */
 ZEND_END_ARG_INFO();
@@ -117,7 +119,7 @@ static zend_function_entry sapnwrfc_class_functions[] = {
 	PHP_ME(sapnwrfc, function_lookup, NULL, ZEND_ACC_PUBLIC)
 	PHP_ME(sapnwrfc, ping, NULL, ZEND_ACC_PUBLIC)
 	PHP_ME(sapnwrfc, get_sso_ticket, NULL, ZEND_ACC_PUBLIC)
-	{NULL, NULL, NULL}
+	PHP_FE_END
 };
 
 static zend_function_entry sapnwrfc_function_class_functions[] = {
@@ -125,15 +127,15 @@ static zend_function_entry sapnwrfc_function_class_functions[] = {
 	PHP_ME(sapnwrfc_function, invoke, NULL, ZEND_ACC_PUBLIC)
 	PHP_ME(sapnwrfc_function, activate, NULL, ZEND_ACC_PUBLIC)
 	PHP_ME(sapnwrfc_function, deactivate, NULL, ZEND_ACC_PUBLIC)
-	{NULL, NULL, NULL}
+	PHP_FE_END
 };
 
 static zend_function_entry sapnwrfc_connection_exception_class_functions[] = {
-	{NULL, NULL, NULL}
+	PHP_FE_END
 };
 
 static zend_function_entry sapnwrfc_call_exception_class_functions[] = {
-	{NULL, NULL, NULL}
+	PHP_FE_END
 };
 
 
@@ -174,11 +176,8 @@ typedef struct _sapnwrfc_call_exception_class_object {
 	zend_object       std;
 } sapnwrfc_call_exception_object;
 
-#if PHP_MAJOR_VERSION >= 6 | (PHP_MAJOR_VERSION == 5 & PHP_MINOR_VERSION >= 2)
+
 #define EXTSRM TSRMLS_C
-#else
-#define EXTSRM
-#endif
 
 
 SAP_UC * u8to16c(char * str) {
@@ -1725,11 +1724,7 @@ static zend_object_value sapnwrfc_function_object_new_ex(zend_class_entry *class
 
 	ALLOC_HASHTABLE(intern->std.properties);
 	zend_hash_init(intern->std.properties, 0, NULL, ZVAL_PTR_DTOR, 0);
-	#if PHP_VERSION_ID < 50399
-	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
-    #else
     object_properties_init(&(intern->std), class_type);
-    #endif
 
 	retval.handle = zend_objects_store_put(intern, NULL, (zend_objects_free_object_storage_t) sapnwrfc_function_object_free_storage, NULL TSRMLS_CC);
 	retval.handlers = &sapnwrfc_function_handlers;
@@ -1833,11 +1828,7 @@ static zend_object_value sapnwrfc_object_new_ex(zend_class_entry *class_type, sa
 
 	ALLOC_HASHTABLE(intern->std.properties);
 	zend_hash_init(intern->std.properties, 0, NULL, ZVAL_PTR_DTOR, 0);
-	#if PHP_VERSION_ID < 50399
-	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
-    #else
     object_properties_init(&(intern->std), class_type);
-    #endif
 
 	retval.handle = zend_objects_store_put(intern, NULL, (zend_objects_free_object_storage_t) sapnwrfc_object_free_storage, NULL TSRMLS_CC);
 	retval.handlers = &sapnwrfc_handlers;
@@ -2720,16 +2711,14 @@ zend_function_entry sapnwrfc_functions[] = {
 	PHP_FE(sapnwrfc_setinipath,    NULL)
 	PHP_FE(sapnwrfc_reloadinifile,    NULL)
     PHP_FE(sapnwrfc_removefunction,   NULL)
-	{NULL, NULL, NULL}	/* Must be the last line in sapnwrfc_functions[] */
+	PHP_FE_END
 };
 /* }}} */
 
 /* {{{ sapnwrfc_module_entry
  */
 zend_module_entry sapnwrfc_module_entry = {
-#if ZEND_MODULE_API_NO >= 20010901
 	STANDARD_MODULE_HEADER,
-#endif
 	"sapnwrfc",
 	sapnwrfc_functions,
 	PHP_MINIT(sapnwrfc),
@@ -2737,9 +2726,7 @@ zend_module_entry sapnwrfc_module_entry = {
 	PHP_RINIT(sapnwrfc),		/* Replace with NULL if there's nothing to do at request start */
 	PHP_RSHUTDOWN(sapnwrfc),	/* Replace with NULL if there's nothing to do at request end */
 	PHP_MINFO(sapnwrfc),
-#if ZEND_MODULE_API_NO >= 20010901
-	"0.1", /* Replace with version number for your extension */
-#endif
+	PHP_SAPNWRFC_VERSION
 	STANDARD_MODULE_PROPERTIES
 };
 /* }}} */
@@ -2854,13 +2841,3 @@ PHP_MINFO_FUNCTION(sapnwrfc) {
 	*/
 }
 /* }}} */
-
-
-/*
- * Local variables:
- * tab-width: 4
- * c-basic-offset: 4
- * End:
- * vim600: noet sw=4 ts=4 fdm=marker
- * vim<600: noet sw=4 ts=4
- */
