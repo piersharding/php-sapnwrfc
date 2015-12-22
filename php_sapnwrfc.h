@@ -37,9 +37,6 @@ extern zend_module_entry sapnwrfc_module_entry;
 #endif
 
 PHP_MINIT_FUNCTION(sapnwrfc);
-PHP_MSHUTDOWN_FUNCTION(sapnwrfc);
-PHP_RINIT_FUNCTION(sapnwrfc);
-PHP_RSHUTDOWN_FUNCTION(sapnwrfc);
 PHP_MINFO_FUNCTION(sapnwrfc);
 
 PHP_FUNCTION(confirm_sapnwrfc_compiled);	/* For testing, remove later. */

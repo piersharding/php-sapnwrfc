@@ -2723,8 +2723,8 @@ zend_module_entry sapnwrfc_module_entry = {
 	sapnwrfc_functions,
 	PHP_MINIT(sapnwrfc),
 	PHP_MSHUTDOWN(sapnwrfc),
-	PHP_RINIT(sapnwrfc),		/* Replace with NULL if there's nothing to do at request start */
-	PHP_RSHUTDOWN(sapnwrfc),	/* Replace with NULL if there's nothing to do at request end */
+	NULL,
+	NULL,
 	PHP_MINFO(sapnwrfc),
 	PHP_SAPNWRFC_VERSION
 	STANDARD_MODULE_PROPERTIES
@@ -2734,27 +2734,6 @@ zend_module_entry sapnwrfc_module_entry = {
 #ifdef COMPILE_DL_SAPNWRFC
 ZEND_GET_MODULE(sapnwrfc)
 #endif
-
-/* {{{ PHP_INI
- */
-/* Remove comments and fill if you need to have entries in php.ini
-PHP_INI_BEGIN()
-    STD_PHP_INI_ENTRY("sapnwrfc.global_value",      "42", PHP_INI_ALL, OnUpdateLong, global_value, zend_sapnwrfc_globals, sapnwrfc_globals)
-    STD_PHP_INI_ENTRY("sapnwrfc.global_string", "foobar", PHP_INI_ALL, OnUpdateString, global_string, zend_sapnwrfc_globals, sapnwrfc_globals)
-PHP_INI_END()
-*/
-/* }}} */
-
-/* {{{ php_sapnwrfc_init_globals
- */
-/* Uncomment this function if you have INI entries
-static void php_sapnwrfc_init_globals(zend_sapnwrfc_globals *sapnwrfc_globals)
-{
-	sapnwrfc_globals->global_value = 0;
-	sapnwrfc_globals->global_string = NULL;
-}
-*/
-/* }}} */
 
 
 PHP_MINIT_FUNCTION(sapnwrfc) {
@@ -2803,41 +2782,13 @@ PHP_MINIT_FUNCTION(sapnwrfc) {
 }
 /* }}} */
 
-/* {{{ PHP_MSHUTDOWN_FUNCTION
- */
-PHP_MSHUTDOWN_FUNCTION(sapnwrfc) {
-	/* uncomment this line if you have INI entries
-	UNREGISTER_INI_ENTRIES();
-	*/
-	return SUCCESS;
-}
-/* }}} */
-
-/* Remove if there's nothing to do at request start */
-/* {{{ PHP_RINIT_FUNCTION
- */
-PHP_RINIT_FUNCTION(sapnwrfc) {
-	return SUCCESS;
-}
-/* }}} */
-
-/* Remove if there's nothing to do at request end */
-/* {{{ PHP_RSHUTDOWN_FUNCTION
- */
-PHP_RSHUTDOWN_FUNCTION(sapnwrfc) {
-	return SUCCESS;
-}
-/* }}} */
 
 /* {{{ PHP_MINFO_FUNCTION
  */
 PHP_MINFO_FUNCTION(sapnwrfc) {
 	php_info_print_table_start();
-	php_info_print_table_header(2, "sapnwrfc support", "enabled");
+	php_info_print_table_row(2, "sapnwrfc support", "enabled");
+	php_info_print_table_row(2, "version", PHP_SAPNWRFC_VERSION);
 	php_info_print_table_end();
-
-	/* Remove comments if you have entries in php.ini
-	DISPLAY_INI_ENTRIES();
-	*/
 }
 /* }}} */
