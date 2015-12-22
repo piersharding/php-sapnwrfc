@@ -16,13 +16,15 @@
   +----------------------------------------------------------------------+
 */
 
-/* $Id: php_sapnwrfc.h,v 1.1.1.1 2004/02/04 21:13:46 boerger Exp $ */
+/* $Id$ */
 
 #ifndef PHP_SAPNWRFC_H
 #define PHP_SAPNWRFC_H
 
 extern zend_module_entry sapnwrfc_module_entry;
 #define phpext_sapnwrfc_ptr &sapnwrfc_module_entry
+
+#define PHP_SAPNWRFC_VERSION "1.0.0"
 
 #ifdef PHP_WIN32
 #define PHP_SAPNWRFC_API __declspec(dllexport)
@@ -42,25 +44,6 @@ PHP_MINFO_FUNCTION(sapnwrfc);
 
 PHP_FUNCTION(confirm_sapnwrfc_compiled);	/* For testing, remove later. */
 
-/*
-  	Declare any global variables you may need between the BEGIN
-	and END macros here:
-
-ZEND_BEGIN_MODULE_GLOBALS(sapnwrfc)
-	long  global_value;
-	char *global_string;
-ZEND_END_MODULE_GLOBALS(sapnwrfc)
-*/
-
-/* In every utility function you add that needs to use variables
-   in php_sapnwrfc_globals, call TSRM_FETCH(); after declaring other
-   variables used by that function, or better yet, pass in TSRMLS_CC
-   after the last function argument and declare your utility function
-   with TSRMLS_DC after the last declared argument.  Always refer to
-   the globals in your function as SAPNWRFC_G(variable).  You are
-   encouraged to rename these macros something shorter, see
-   examples in any other php module directory.
-*/
 
 #ifdef ZTS
 #define SAPNWRFC_G(v) TSRMG(sapnwrfc_globals_id, zend_sapnwrfc_globals *, v)
@@ -69,13 +52,3 @@ ZEND_END_MODULE_GLOBALS(sapnwrfc)
 #endif
 
 #endif	/* PHP_SAPNWRFC_H */
-
-
-/*
- * Local variables:
- * tab-width: 4
- * c-basic-offset: 4
- * End:
- * vim600: noet sw=4 ts=4 fdm=marker
- * vim<600: noet sw=4 ts=4
- */
