@@ -8,7 +8,8 @@ global $SAP_CONFIG;
 class ReadTableTest extends PHPUnit_Framework_TestCase
 {
 
-    protected function setUp() {
+    protected function setUp()
+    {
         global $SAP_CONFIG;
         $this->config = Spyc::YAMLLoad($SAP_CONFIG);
         echo "sapnwrfc version: ".sapnwrfc_version()."\n";
@@ -16,23 +17,22 @@ class ReadTableTest extends PHPUnit_Framework_TestCase
     }
     
     
-    public function testReadTable() {
-       try {
+    public function testReadTable()
+    {
+        try {
             $conn = new sapnwrfc($this->config);
             $h = $conn->function_lookup('RFC_GET_TABLE_ENTRIES');
             $parms = array('BYPASS_BUFFER' => 'X',
                            'MAX_ENTRIES' => 1,
                            'TABLE_NAME' => 'T005ZR');
             $h->invoke($parms);
-        }
-        catch (sapnwrfcCallException $e) {
+        } catch (sapnwrfcCallException $e) {
             //echo "Exception type: ".$e."\n";
             echo "Exception key: ".$e->key."\n";
             echo "Exception code: ".$e->code."\n";
             echo "Exception message: ".$e->getMessage()."\n";
-            $this->assertTrue(TRUE);
-        }
-        catch (Exception $e) {
+            $this->assertTrue(true);
+        } catch (Exception $e) {
             echo "Exception type: ".$e."\n";
             echo "Exception key: ".$e->key."\n";
             echo "Exception code: ".$e->code."\n";
@@ -41,5 +41,4 @@ class ReadTableTest extends PHPUnit_Framework_TestCase
         }
         echo "I am a happy piece of code that carried on....\n";
     }
-    
 }

@@ -53,6 +53,11 @@ var_dump(sapnwrfc_version());
 var_dump(sapnwrfc_rfcversion());
 ```
 
+#### Examples
+
+We provides [here](examples) some examples, to try your connection and do some RFC calls.
+
+
 #### Execute unit tests
 
 If you have downloaded the complete repository and you have `phpunit` installed globaly, you can execute from this repo root directory
