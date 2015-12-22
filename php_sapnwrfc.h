@@ -36,9 +36,6 @@ extern zend_module_entry sapnwrfc_module_entry;
 #include "TSRM.h"
 #endif
 
-PHP_MINIT_FUNCTION(sapnwrfc);
-PHP_MINFO_FUNCTION(sapnwrfc);
-
 /* functions in sapnwrfc.c */
 PHP_FUNCTION(sapnwrfc_version);
 PHP_FUNCTION(sapnwrfc_version_array);
@@ -46,6 +43,23 @@ PHP_FUNCTION(sapnwrfc_rfcversion);
 PHP_FUNCTION(sapnwrfc_setinipath);
 PHP_FUNCTION(sapnwrfc_reloadinifile);
 PHP_FUNCTION(sapnwrfc_removefunction);
+
+/* methods in sapnwrfc.c */
+PHP_METHOD(sapnwrfc, __construct);
+PHP_METHOD(sapnwrfc, connection_attributes);
+PHP_METHOD(sapnwrfc, close);
+PHP_METHOD(sapnwrfc, function_lookup);
+PHP_METHOD(sapnwrfc, ping);
+PHP_METHOD(sapnwrfc, get_sso_ticket);
+
+/* methods in sapnwrfc.c */
+PHP_METHOD(sapnwrfc_function, __construct);
+PHP_METHOD(sapnwrfc_function, invoke);
+PHP_METHOD(sapnwrfc_function, activate);
+PHP_METHOD(sapnwrfc_function, deactivate);
+
+PHP_MINIT_FUNCTION(sapnwrfc);
+PHP_MINFO_FUNCTION(sapnwrfc);
 
 #ifdef ZTS
 #define SAPNWRFC_G(v) TSRMG(sapnwrfc_globals_id, zend_sapnwrfc_globals *, v)

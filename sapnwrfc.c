@@ -67,17 +67,7 @@ typedef enum {
 mybool sapnwrfc_global_error;
 
 /* forward declaration for all methods use (class-name, method-name) */
-PHP_METHOD(sapnwrfc, __construct);
-PHP_METHOD(sapnwrfc, connection_attributes);
-PHP_METHOD(sapnwrfc, close);
-PHP_METHOD(sapnwrfc, function_lookup);
-PHP_METHOD(sapnwrfc, ping);
-PHP_METHOD(sapnwrfc, get_sso_ticket);
 
-PHP_METHOD(sapnwrfc_function, __construct);
-PHP_METHOD(sapnwrfc_function, invoke);
-PHP_METHOD(sapnwrfc_function, activate);
-PHP_METHOD(sapnwrfc_function, deactivate);
 
 /* declare method parameters */
 /* supply a name and default to call by parameter */
