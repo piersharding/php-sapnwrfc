@@ -39,8 +39,13 @@ extern zend_module_entry sapnwrfc_module_entry;
 PHP_MINIT_FUNCTION(sapnwrfc);
 PHP_MINFO_FUNCTION(sapnwrfc);
 
-PHP_FUNCTION(confirm_sapnwrfc_compiled);	/* For testing, remove later. */
-
+/* functions in sapnwrfc.c */
+PHP_FUNCTION(sapnwrfc_version);
+PHP_FUNCTION(sapnwrfc_version_array);
+PHP_FUNCTION(sapnwrfc_rfcversion);
+PHP_FUNCTION(sapnwrfc_setinipath);
+PHP_FUNCTION(sapnwrfc_reloadinifile);
+PHP_FUNCTION(sapnwrfc_removefunction);
 
 #ifdef ZTS
 #define SAPNWRFC_G(v) TSRMG(sapnwrfc_globals_id, zend_sapnwrfc_globals *, v)

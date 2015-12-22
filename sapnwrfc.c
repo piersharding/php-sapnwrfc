@@ -2844,10 +2844,6 @@ PHP_FUNCTION(sapnwrfc_removefunction) {
 /* }}} */
 
 
-/* If you declare any globals in php_sapnwrfc.h uncomment this:
-ZEND_DECLARE_MODULE_GLOBALS(sapnwrfc)
-*/
-
 /* {{{ sapnwrfc_functions[]
  *
  * Every user visible function must have an entry in sapnwrfc_functions[].
@@ -2879,6 +2875,7 @@ zend_module_entry sapnwrfc_module_entry = {
 };
 /* }}} */
 
+/* @TODO is this needed??? */
 #ifdef COMPILE_DL_SAPNWRFC
 ZEND_GET_MODULE(sapnwrfc)
 #endif
@@ -2903,21 +2900,13 @@ PHP_MINIT_FUNCTION(sapnwrfc) {
 	sapnwrfc_function_handlers.clone_obj = sapnwrfc_function_object_clone;
 
 	INIT_CLASS_ENTRY(cex_conn, "sapnwrfcConnectionException", sapnwrfc_connection_exception_class_functions);
-#ifdef HAVE_SPL
 	sapnwrfc_connection_exception_ce = zend_register_internal_class_ex(&cex_conn, spl_ce_RuntimeException, NULL TSRMLS_CC);
-#else
-	sapnwrfc_connection_exception_ce = zend_register_internal_class_ex(&cex_conn, zend_exception_get_default(TSRMLS_C), NULL TSRMLS_CC);
-#endif
 	sapnwrfc_connection_exception_ce->ce_flags |= ZEND_ACC_FINAL;
     zend_declare_property_long(sapnwrfc_connection_exception_ce, "code", sizeof("code")-1, 0, ZEND_ACC_PUBLIC TSRMLS_CC);
     zend_declare_property_string(sapnwrfc_connection_exception_ce, "key", sizeof("key")-1, "00000", ZEND_ACC_PUBLIC TSRMLS_CC);
 
 	INIT_CLASS_ENTRY(cex_call, "sapnwrfcCallException", sapnwrfc_call_exception_class_functions);
-#ifdef HAVE_SPL
 	sapnwrfc_call_exception_ce = zend_register_internal_class_ex(&cex_call, spl_ce_RuntimeException, NULL TSRMLS_CC);
-#else
-	sapnwrfc_call_exception_ce = zend_register_internal_class_ex(&cex_call, zend_exception_get_default(TSRMLS_C), NULL TSRMLS_CC);
-#endif
 	sapnwrfc_call_exception_ce->ce_flags |= ZEND_ACC_FINAL;
     zend_declare_property_long(sapnwrfc_call_exception_ce, "code", sizeof("code")-1, 0, ZEND_ACC_PUBLIC TSRMLS_CC);
     zend_declare_property_string(sapnwrfc_call_exception_ce, "key", sizeof("key")-1, "00000", ZEND_ACC_PUBLIC TSRMLS_CC);
