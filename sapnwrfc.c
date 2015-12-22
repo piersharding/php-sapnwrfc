@@ -18,32 +18,10 @@
 
 /* $Id$ */
 
-//	DECL_EXP RFC_RC SAP_API RfcGetPartnerSNCName(RFC_CONNECTION_HANDLE rfcHandle, SAP_UC *sncName, unsigned length, RFC_ERROR_INFO* errorInfo);
-//	DECL_EXP RFC_RC SAP_API RfcGetPartnerSNCKey(RFC_CONNECTION_HANDLE rfcHandle, SAP_RAW *sncKey, unsigned *length, RFC_ERROR_INFO* errorInfo);
-//	DECL_EXP RFC_RC SAP_API RfcSNCNameToKey(SAP_UC const *sncLib, SAP_UC const *sncName, SAP_RAW *sncKey, unsigned *keyLength, RFC_ERROR_INFO* errorInfo);
-//	DECL_EXP RFC_RC SAP_API RfcSNCKeyToName(SAP_UC const *sncLib, SAP_RAW const *sncKey, unsigned keyLength ,SAP_UC *sncName, unsigned nameLength, RFC_ERROR_INFO* errorInfo);
-
-
-//	DECL_EXP RFC_RC SAP_API RfcGetTransactionID(RFC_CONNECTION_HANDLE rfcHandle, RFC_TID tid, RFC_ERROR_INFO* errorInfo);
-//	DECL_EXP RFC_TRANSACTION_HANDLE SAP_API RfcCreateTransaction(RFC_CONNECTION_HANDLE rfcHandle, RFC_TID tid, SAP_UC const *queueName, RFC_ERROR_INFO* errorInfo);
-//	DECL_EXP RFC_RC SAP_API RfcInvokeInTransaction(RFC_TRANSACTION_HANDLE tHandle, RFC_FUNCTION_HANDLE funcHandle, RFC_ERROR_INFO* errorInfo);
-//	DECL_EXP RFC_RC SAP_API RfcSubmitTransaction(RFC_TRANSACTION_HANDLE tHandle, RFC_ERROR_INFO* errorInfo);
-//	DECL_EXP RFC_RC SAP_API RfcConfirmTransaction(RFC_TRANSACTION_HANDLE tHandle, RFC_ERROR_INFO* errorInfo);
-//	DECL_EXP RFC_RC SAP_API RfcDestroyTransaction(RFC_TRANSACTION_HANDLE tHandle, RFC_ERROR_INFO* errorInfo);
-
-
-//  DECL_EXP RFC_RC SAP_API RfcSetParameterActive(RFC_FUNCTION_HANDLE funcHandle, SAP_UC const* paramName, int isActive, RFC_ERROR_INFO* errorInfo);
-//  DECL_EXP RFC_RC SAP_API RfcIsParameterActive(RFC_FUNCTION_HANDLE funcHandle, SAP_UC const* paramName, int *isActive, RFC_ERROR_INFO* errorInfo);
-// add_property_bool( return_value, pszKey, bData );
-//  void zend_update_property_bool(zend_class_entry *scope, zval *object, char *name, int name_length, long value TSRMLS_DC);
-//  zval *zend_read_property(zend_class_entry *scope, zval *object, char *name, int name_length, zend_bool silent TSRMLS_DC);
-// int zend_is_true(zval *op);
-
-//	DECL_EXP RFC_RC SAP_API RfcEnableBASXML(RFC_FUNCTION_DESC_HANDLE funcDesc, RFC_ERROR_INFO* errorInfo);
-//  DECL_EXP RFC_RC SAP_API RfcIsBASXMLSupported(RFC_FUNCTION_DESC_HANDLE funcDesc, int* isEnabled, RFC_ERROR_INFO* errorInfo);
-
-
-
+/**
+ * @see SapNwRfc function reference
+ * http://help.sap.com/saphelp_nwes72/helpdata/DE/48/a8c6815134307be10000000a42189b/content.htm?frameset=/DE/48/a8c5515134307be10000000a42189b/frameset.htm&current_toc=/de/b4/3f9e64bff38c4f9a19635f57eb4248/plain.htm&node_id=309&show_children=false
+ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -79,10 +57,7 @@ void set_table_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value);
 
 /* declare the class entry */
 extern PHPAPI zend_class_entry *zend_ce_iterator;
-
-#ifdef HAVE_SPL
 extern PHPAPI zend_class_entry *spl_ce_RuntimeException;
-#endif
 
 typedef enum { 
     false, 
