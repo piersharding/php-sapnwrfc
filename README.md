@@ -269,6 +269,11 @@ class sapnwrfc
  */
 class sapnwrfc_function
 {
+    /**
+     * @var string 
+     */
+    public $name;
+    
     public function __construct();
     
     /**

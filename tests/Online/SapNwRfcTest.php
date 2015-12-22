@@ -186,6 +186,8 @@ class SapNwRfcTest extends AbstractOnlineTestCase
         $actual = $conn->function_lookup('RFC_PING');
         
         $this->assertInstanceOf('sapnwrfc_function', $actual);
+        
+        $this->assertEquals('RFC_PING', $actual->name);
     }
 
     /**
@@ -198,7 +200,5 @@ class SapNwRfcTest extends AbstractOnlineTestCase
         $conn = new sapnwrfc($this->getConfig());
         
         $actual = $conn->function_lookup('RFC_NOT_EXISTENT');
-        
-        $this->assertInstanceOf('sapnwrfc_function', $actual);
     }
 }
