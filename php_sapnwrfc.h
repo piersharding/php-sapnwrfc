@@ -34,7 +34,11 @@ extern zend_module_entry sapnwrfc_module_entry;
 
 #ifdef ZTS
 #include "TSRM.h"
+#define SAPNWRFC_G(v) TSRMG(sapnwrfc_globals_id, zend_sapnwrfc_globals *, v)
+#else
+#define SAPNWRFC_G(v) (sapnwrfc_globals.v)
 #endif
+
 
 /* functions in sapnwrfc.c */
 PHP_FUNCTION(sapnwrfc_version);
@@ -61,10 +65,5 @@ PHP_METHOD(sapnwrfc_function, deactivate);
 PHP_MINIT_FUNCTION(sapnwrfc);
 PHP_MINFO_FUNCTION(sapnwrfc);
 
-#ifdef ZTS
-#define SAPNWRFC_G(v) TSRMG(sapnwrfc_globals_id, zend_sapnwrfc_globals *, v)
-#else
-#define SAPNWRFC_G(v) (sapnwrfc_globals.v)
-#endif
 
 #endif	/* PHP_SAPNWRFC_H */

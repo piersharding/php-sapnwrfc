@@ -47,6 +47,7 @@ SAP_UC * u8to16c(char * str);
 SAP_UC * u8to16(zval *str);
 zval* u16to8c(SAP_UC * str, int len);
 zval* u16to8(SAP_UC * str);
+
 static void SAPNW_rfc_conn_error(char *msg, int code, zval *key, zval *message);
 
 static zval * get_field_value(DATA_CONTAINER_HANDLE hcont, RFC_FIELD_DESC fieldDesc);
@@ -2845,6 +2846,7 @@ zend_function_entry sapnwrfc_functions[] = {
 };
 /* }}} */
 
+
 /* {{{ sapnwrfc_module_entry
  */
 zend_module_entry sapnwrfc_module_entry = {
@@ -2861,12 +2863,14 @@ zend_module_entry sapnwrfc_module_entry = {
 };
 /* }}} */
 
-/* @TODO is this needed??? */
+
 #ifdef COMPILE_DL_SAPNWRFC
 ZEND_GET_MODULE(sapnwrfc)
 #endif
 
 
+/* {{{ PHP_MINIT_FUNCTION
+ */
 PHP_MINIT_FUNCTION(sapnwrfc) {
 	zend_class_entry ce;
 	zend_class_entry ce_func;
