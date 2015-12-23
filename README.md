@@ -1,16 +1,25 @@
+
+# SAPNWRFC extension for PHP
+
 ```
   +----------------------------------------------------------------------+
-  | PHP Version 5                                                        |
+  | PHP Version 7                                                        |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2010 Piers Harding                                     |
+  | Copyright (c) 2009-2015 Piers Harding                                |
   +----------------------------------------------------------------------+
-  | This package is released under the same terms as PHP itself.         |
+  | This source file is subject to version 3.01 of the PHP license,      |
+  | that is bundled with this package in the file LICENSE, and is        |
+  | available through the world-wide-web at the following url:           |
+  | http://www.php.net/license/3_01.txt                                  |
+  | If you did not receive a copy of the PHP license and are unable to   |
+  | obtain it through the world-wide-web, please send a note to          |
+  | license@php.net so we can mail you a copy immediately.               |
   +----------------------------------------------------------------------+
   | Author: Piers Harding <piers@ompka.net>                              |
   +----------------------------------------------------------------------+
 ```
 
-# Summary
+## Summary
 
 Welcome to the sapnwrfc PHP package.  This package is intended to facilitate RFC calls to an SAP R/3 system of release NW2004x and above.  It may work for earlier versions but it hasn't been tested.
 The fundamental purpose of the production of this package, is to provide a clean object oriented interface to RFC calls from within PHP.  This will hopefully have a number of effects:
@@ -20,26 +29,44 @@ The fundamental purpose of the production of this package, is to provide a clean
 *  make the combination of Linux, Apache, and PHP the killer app for internet connectivity with SAP.
 *  Establish a small fun open source project that people are more than welcome to contribute to, if they so wish.
 
-# Installation
 
-Please see the INSTALL file
+## Installation
 
-For Windows, some precompiled binaries have been supplied by chemik3 (https://github.com/chemik3 - thanks!) available at: https://sourceforge.net/projects/saprfcsapnwrfc/files/?source=navbar
+Please see [INSTALL.md](INSTALL.md)
 
-## Check installation
 
-should list the module after installation
-```cli
+### Check if it works
+
+#### Listed as module?
+
+Should list `sapnwrfc` in the extension list
+
+```
 php -m 
 ```
 
-Display the installed versions
+
+#### Display the installed versions
+
 ```php
 var_dump(sapnwrfc_version());
 var_dump(sapnwrfc_rfcversion());
 ```
 
-# Getting started
+#### Examples
+
+We provides [here](examples) some examples, to try your connection and do some RFC calls.
+
+
+#### Execute unit tests
+
+If you have downloaded the complete repository and you have `phpunit` installed globaly, you can execute from this repo root directory
+```
+phpunit
+```
+
+
+## Getting started
 
 ```php
 use sapnwrfc;
@@ -89,9 +116,10 @@ if($conn->ping() === true){
 }
 ```
 
-# Documentation
+## Documentation
 
-## Hint: change log directory
+### Hint: change the log directory
+
 The sapnwrfc will create a logfile, if you enable `TRACE` 
 It will by default use the current working dir. You can view your with `getcwd()`
 
@@ -107,7 +135,8 @@ try {
 chdir($cwd); //change the cwd back to the previous value
 ```
 
-## Functions and classes
+### Functions and classes
+
 A list of all available functions/methods and their parameters + return values
 
 ```php
@@ -240,6 +269,11 @@ class sapnwrfc
  */
 class sapnwrfc_function
 {
+    /**
+     * @var string 
+     */
+    public $name;
+    
     public function __construct();
     
     /**
@@ -249,8 +283,14 @@ class sapnwrfc_function
      */
     public function invoke(array $parameters);
     
+    /**
+     * @param string $parameterName
+     */
     public function activate($parameterName);
     
+    /**
+     * @param string $parameterName
+     */
     public function deactivate($parameterName);
     
 }

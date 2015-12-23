@@ -1,41 +1,27 @@
 /*
   +----------------------------------------------------------------------+
-  | PHP Version 5                                                        |
+  | PHP Version 7                                                        |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2010 Piers Harding                                |
+  | Copyright (c) 2009-2015 Piers Harding                                |
   +----------------------------------------------------------------------+
-  | This package is released under the same terms as PHP itself.         |
+  | This source file is subject to version 3.01 of the PHP license,      |
+  | that is bundled with this package in the file LICENSE, and is        |
+  | available through the world-wide-web at the following url:           |
+  | http://www.php.net/license/3_01.txt                                  |
+  | If you did not receive a copy of the PHP license and are unable to   |
+  | obtain it through the world-wide-web, please send a note to          |
+  | license@php.net so we can mail you a copy immediately.               |
   +----------------------------------------------------------------------+
-  | Author: Piers Harding <piers@ompka.net>                               |
+  | Author: Piers Harding <piers@ompka.net>                              |
   +----------------------------------------------------------------------+
 */
 
-//	DECL_EXP RFC_RC SAP_API RfcGetPartnerSNCName(RFC_CONNECTION_HANDLE rfcHandle, SAP_UC *sncName, unsigned length, RFC_ERROR_INFO* errorInfo);
-//	DECL_EXP RFC_RC SAP_API RfcGetPartnerSNCKey(RFC_CONNECTION_HANDLE rfcHandle, SAP_RAW *sncKey, unsigned *length, RFC_ERROR_INFO* errorInfo);
-//	DECL_EXP RFC_RC SAP_API RfcSNCNameToKey(SAP_UC const *sncLib, SAP_UC const *sncName, SAP_RAW *sncKey, unsigned *keyLength, RFC_ERROR_INFO* errorInfo);
-//	DECL_EXP RFC_RC SAP_API RfcSNCKeyToName(SAP_UC const *sncLib, SAP_RAW const *sncKey, unsigned keyLength ,SAP_UC *sncName, unsigned nameLength, RFC_ERROR_INFO* errorInfo);
+/* $Id$ */
 
-
-//	DECL_EXP RFC_RC SAP_API RfcGetTransactionID(RFC_CONNECTION_HANDLE rfcHandle, RFC_TID tid, RFC_ERROR_INFO* errorInfo);
-//	DECL_EXP RFC_TRANSACTION_HANDLE SAP_API RfcCreateTransaction(RFC_CONNECTION_HANDLE rfcHandle, RFC_TID tid, SAP_UC const *queueName, RFC_ERROR_INFO* errorInfo);
-//	DECL_EXP RFC_RC SAP_API RfcInvokeInTransaction(RFC_TRANSACTION_HANDLE tHandle, RFC_FUNCTION_HANDLE funcHandle, RFC_ERROR_INFO* errorInfo);
-//	DECL_EXP RFC_RC SAP_API RfcSubmitTransaction(RFC_TRANSACTION_HANDLE tHandle, RFC_ERROR_INFO* errorInfo);
-//	DECL_EXP RFC_RC SAP_API RfcConfirmTransaction(RFC_TRANSACTION_HANDLE tHandle, RFC_ERROR_INFO* errorInfo);
-//	DECL_EXP RFC_RC SAP_API RfcDestroyTransaction(RFC_TRANSACTION_HANDLE tHandle, RFC_ERROR_INFO* errorInfo);
-
-
-//  DECL_EXP RFC_RC SAP_API RfcSetParameterActive(RFC_FUNCTION_HANDLE funcHandle, SAP_UC const* paramName, int isActive, RFC_ERROR_INFO* errorInfo);
-//  DECL_EXP RFC_RC SAP_API RfcIsParameterActive(RFC_FUNCTION_HANDLE funcHandle, SAP_UC const* paramName, int *isActive, RFC_ERROR_INFO* errorInfo);
-// add_property_bool( return_value, pszKey, bData );
-//  void zend_update_property_bool(zend_class_entry *scope, zval *object, char *name, int name_length, long value TSRMLS_DC);
-//  zval *zend_read_property(zend_class_entry *scope, zval *object, char *name, int name_length, zend_bool silent TSRMLS_DC);
-// int zend_is_true(zval *op);
-
-//	DECL_EXP RFC_RC SAP_API RfcEnableBASXML(RFC_FUNCTION_DESC_HANDLE funcDesc, RFC_ERROR_INFO* errorInfo);
-//  DECL_EXP RFC_RC SAP_API RfcIsBASXMLSupported(RFC_FUNCTION_DESC_HANDLE funcDesc, int* isEnabled, RFC_ERROR_INFO* errorInfo);
-
-
-
+/**
+ * @see SapNwRfc function reference
+ * http://help.sap.com/saphelp_nwes72/helpdata/DE/48/a8c6815134307be10000000a42189b/content.htm?frameset=/DE/48/a8c5515134307be10000000a42189b/frameset.htm&current_toc=/de/b4/3f9e64bff38c4f9a19635f57eb4248/plain.htm&node_id=309&show_children=false
+ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -61,6 +47,7 @@ SAP_UC * u8to16c(char * str);
 SAP_UC * u8to16(zval *str);
 zval* u16to8c(SAP_UC * str, int len);
 zval* u16to8(SAP_UC * str);
+
 static void SAPNW_rfc_conn_error(char *msg, int code, zval *key, zval *message);
 
 static zval * get_field_value(DATA_CONTAINER_HANDLE hcont, RFC_FIELD_DESC fieldDesc);
@@ -71,33 +58,20 @@ void set_table_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value);
 
 /* declare the class entry */
 extern PHPAPI zend_class_entry *zend_ce_iterator;
-
-#ifdef HAVE_SPL
 extern PHPAPI zend_class_entry *spl_ce_RuntimeException;
-#endif
 
-typedef enum { false, true } mybool;
+typedef enum { 
+    false, 
+    true 
+} mybool;
 
 mybool sapnwrfc_global_error;
 
 /* forward declaration for all methods use (class-name, method-name) */
-PHP_METHOD(sapnwrfc, __construct);
-PHP_METHOD(sapnwrfc, connection_attributes);
-PHP_METHOD(sapnwrfc, close);
-PHP_METHOD(sapnwrfc, function_lookup);
-PHP_METHOD(sapnwrfc, ping);
-PHP_METHOD(sapnwrfc, get_sso_ticket);
 
-PHP_METHOD(sapnwrfc_function, __construct);
-PHP_METHOD(sapnwrfc_function, invoke);
-PHP_METHOD(sapnwrfc_function, activate);
-PHP_METHOD(sapnwrfc_function, deactivate);
 
 /* declare method parameters */
 /* supply a name and default to call by parameter */
-#if (PHP_MAJOR_VERSION == 5 & PHP_MINOR_VERSION < 3)
-static
-#endif
 ZEND_BEGIN_ARG_INFO(arginfo_sapnwrfc___construct, 0)
 ZEND_ARG_INFO(0, connection_parameters)  /* parameter name */
 ZEND_END_ARG_INFO();
@@ -111,7 +85,7 @@ static zend_function_entry sapnwrfc_class_functions[] = {
 	PHP_ME(sapnwrfc, function_lookup, NULL, ZEND_ACC_PUBLIC)
 	PHP_ME(sapnwrfc, ping, NULL, ZEND_ACC_PUBLIC)
 	PHP_ME(sapnwrfc, get_sso_ticket, NULL, ZEND_ACC_PUBLIC)
-	{NULL, NULL, NULL}
+	PHP_FE_END
 };
 
 static zend_function_entry sapnwrfc_function_class_functions[] = {
@@ -119,15 +93,15 @@ static zend_function_entry sapnwrfc_function_class_functions[] = {
 	PHP_ME(sapnwrfc_function, invoke, NULL, ZEND_ACC_PUBLIC)
 	PHP_ME(sapnwrfc_function, activate, NULL, ZEND_ACC_PUBLIC)
 	PHP_ME(sapnwrfc_function, deactivate, NULL, ZEND_ACC_PUBLIC)
-	{NULL, NULL, NULL}
+	PHP_FE_END
 };
 
 static zend_function_entry sapnwrfc_connection_exception_class_functions[] = {
-	{NULL, NULL, NULL}
+	PHP_FE_END
 };
 
 static zend_function_entry sapnwrfc_call_exception_class_functions[] = {
-	{NULL, NULL, NULL}
+	PHP_FE_END
 };
 
 
@@ -168,15 +142,11 @@ typedef struct _sapnwrfc_call_exception_class_object {
 	zend_object       std;
 } sapnwrfc_call_exception_object;
 
-#if PHP_MAJOR_VERSION >= 6 | (PHP_MAJOR_VERSION == 5 & PHP_MINOR_VERSION >= 2)
+
 #define EXTSRM TSRMLS_C
-#else
-#define EXTSRM
-#endif
 
 
 SAP_UC * u8to16c(char * str) {
-	// RFC_RC rc;
 	RFC_ERROR_INFO errorInfo;
 	SAP_UC *sapuc;
 	unsigned sapucSize, resultLength;
@@ -185,14 +155,14 @@ SAP_UC * u8to16c(char * str) {
 	sapuc = mallocU(sapucSize);
 	memsetU(sapuc, 0, sapucSize);
 	resultLength = 0;
-	// rc = RfcUTF8ToSAPUC((RFC_BYTE *)str, strlen(str), sapuc, &sapucSize, &resultLength, &errorInfo);
+	
 	RfcUTF8ToSAPUC((RFC_BYTE *)str, strlen(str), sapuc, &sapucSize, &resultLength, &errorInfo);
+	
 	return sapuc;
 }
 
 
 SAP_UC * u8to16(zval *str) {
-	// RFC_RC rc;
 	RFC_ERROR_INFO errorInfo;
 	SAP_UC *sapuc;
 	unsigned sapucSize, resultLength;
@@ -201,14 +171,14 @@ SAP_UC * u8to16(zval *str) {
 	sapuc = mallocU(sapucSize);
 	memsetU(sapuc, 0, sapucSize);
 	resultLength = 0;
-	// rc = RfcUTF8ToSAPUC((RFC_BYTE *)Z_STRVAL_P(str), Z_STRLEN_P(str), sapuc, &sapucSize, &resultLength, &errorInfo);
+	
 	RfcUTF8ToSAPUC((RFC_BYTE *)Z_STRVAL_P(str), Z_STRLEN_P(str), sapuc, &sapucSize, &resultLength, &errorInfo);
+	
 	return sapuc;
 }
 
 
 zval* u16to8(SAP_UC * str) {
-	// RFC_RC rc;
 	RFC_ERROR_INFO errorInfo;
 	unsigned utf8Size, resultLength;
 	char * utf8;
@@ -218,17 +188,18 @@ zval* u16to8(SAP_UC * str) {
 	utf8 = malloc(utf8Size + 2);
 	memset(utf8, 0, utf8Size + 2);
 	resultLength = 0;
-	// rc = RfcSAPUCToUTF8(str, strlenU(str), (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
+	
 	RfcSAPUCToUTF8(str, strlenU(str), (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
+	
 	MAKE_STD_ZVAL( php_str );
 	ZVAL_STRINGL( php_str, utf8, resultLength, TRUE );
 	free(utf8);
+	
 	return php_str;
 }
 
 
 zval* u16to8c(SAP_UC * str, int len) {
-	// RFC_RC rc;
 	RFC_ERROR_INFO errorInfo;
 	unsigned utf8Size, resultLength;
 	char * utf8;
@@ -238,11 +209,13 @@ zval* u16to8c(SAP_UC * str, int len) {
 	utf8 = malloc(utf8Size + 2);
 	memset(utf8, 0, utf8Size + 2);
 	resultLength = 0;
-	// rc = RfcSAPUCToUTF8(str, len, (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
+
 	RfcSAPUCToUTF8(str, len, (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
+	
 	MAKE_STD_ZVAL( php_str );
 	ZVAL_STRINGL( php_str, (char*)utf8, resultLength, TRUE );
 	free(utf8);
+	
 	return php_str;
 }
 
@@ -251,9 +224,13 @@ static void * make_space(int len){
 
     char * ptr;
     ptr = malloc( len + 2 );
-    if ( ptr == NULL )
+    
+    if ( ptr == NULL ) {
 	    return NULL;
+    }
+    
     memset(ptr, 0, len + 2);
+    
     return ptr;
 }
 
@@ -261,11 +238,11 @@ mybool my_is_empty(zval *value) {
 	 if (Z_TYPE_P(value) == IS_NULL ||
 	     (Z_TYPE_P(value) == IS_STRING && Z_STRLEN_P(value) == 0) ||
 	     (Z_TYPE_P(value) == IS_ARRAY && zend_hash_num_elements(Z_ARRVAL_P(value)) == 0)) {
+	     
 		 return TRUE;
 	 }
-	 else {
-		 return FALSE;
-	 }
+	 
+	 return FALSE;
 }
 
 
@@ -274,6 +251,7 @@ zval * make_long(int i) {
 	zval * val;
 	ALLOC_INIT_ZVAL(val);
 	ZVAL_LONG(val, i);
+	
 	return val;
 }
 
@@ -283,6 +261,7 @@ zval * make_double(double f) {
 	zval * val;
 	ALLOC_INIT_ZVAL(val);
 	ZVAL_DOUBLE(val, f);
+	
 	return val;
 }
 
@@ -292,6 +271,7 @@ zval * make_string(char *str) {
 	zval * val;
 	ALLOC_INIT_ZVAL(val);
 	ZVAL_STRING(val, (char*)str, FALSE);
+	
 	return val;
 }
 
@@ -300,6 +280,7 @@ zval * make_stringc(char *str) {
 	zval * val;
 	ALLOC_INIT_ZVAL(val);
 	ZVAL_STRING(val, (char*)str, TRUE);
+	
 	return val;
 }
 
@@ -308,6 +289,7 @@ zval * make_stringl(char *str, int len) {
 	zval * val;
 	ALLOC_INIT_ZVAL(val);
 	ZVAL_STRINGL(val, (char*)str, len, FALSE);
+	
 	return val;
 }
 
@@ -316,6 +298,7 @@ zval * make_stringcl(char *str, int len) {
 	zval * val;
 	ALLOC_INIT_ZVAL(val);
 	ZVAL_STRINGL(val, (char*)str, len, TRUE);
+	
 	return val;
 }
 
@@ -325,6 +308,7 @@ zval * make_empty() {
 	zval * val;
 	ALLOC_INIT_ZVAL(val);
 	ZVAL_EMPTY_STRING(val);
+	
 	return val;
 }
 
@@ -347,6 +331,7 @@ static char * my_concatc2c(char *part1, char *part2){
 	ptr = make_space(strlen(part1) + strlen(part2));
 	memcpy((char *)ptr, part1, strlen(part1));
 	memcpy((char *)ptr+strlen(part1), part2, strlen(part2));
+	
 	return ptr;
 }
 
@@ -398,9 +383,12 @@ static zval * get_time_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 		ZVAL_NULL(val);
+		
 		return val;
 	}
+	
 	val = u16to8c(timeBuff, 6);
+	
 	return val;
 }
 
@@ -420,9 +408,12 @@ static zval * get_date_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 		ZVAL_NULL(val);
+		
 		return val;
 	}
+	
 	val = u16to8c(dateBuff, 8);
+	
 	return val;
 }
 
@@ -442,8 +433,10 @@ static zval * get_int_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 		ZVAL_NULL(val);
+		
 		return val;
 	}
+	
 	return make_long(rfc_int);
 }
 
@@ -463,8 +456,10 @@ static zval * get_int1_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 		ZVAL_NULL(val);
+		
 		return val;
 	}
+	
 	return make_long(( int ) rfc_int1);
 }
 
@@ -484,8 +479,10 @@ static zval * get_int2_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 		ZVAL_NULL(val);
+		
 		return val;
 	}
+	
 	return make_long(( int ) rfc_int2);
 }
 
@@ -505,8 +502,10 @@ static zval * get_float_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 		ZVAL_NULL(val);
+		
 		return val;
 	}
+	
 	return make_double(( double ) rfc_float);
 }
 
@@ -527,12 +526,14 @@ static zval * get_string_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 		ZVAL_NULL(val);
+		
 		return val;
 	}
 
 	/* bail out if string is empty */
-	if (strLen == 0)
+	if (strLen == 0) {
 		return make_empty();
+    }
 
 	buffer = make_space(strLen*4);
 	rc = RfcGetString(hcont, name, (SAP_UC *)buffer, strLen + 2, &retStrLen, &errorInfo);
@@ -543,11 +544,13 @@ static zval * get_string_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 		ZVAL_NULL(val);
+		
 		return val;
 	}
 
 	val = u16to8c((SAP_UC *)buffer, retStrLen);
 	free(buffer);
+	
 	return val;
 }
 
@@ -568,13 +571,15 @@ static zval * get_xstring_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 		ZVAL_NULL(val);
+		
 		return val;
 	}
 
 	/* bail out if string is empty */
-	if (strLen == 0)
+	if (strLen == 0) {
 		return make_empty();
-
+    }
+    
 	buffer = make_space(strLen);
 	rc = RfcGetXString(hcont, name, (SAP_RAW *)buffer, strLen, &retStrLen, &errorInfo);
 	if (rc != RFC_OK) {
@@ -584,11 +589,13 @@ static zval * get_xstring_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 		ZVAL_NULL(val);
+		
 		return val;
 }
 
 	val = make_stringcl(buffer, strLen);
 	free(buffer);
+	
 	return val;
 }
 
@@ -610,8 +617,10 @@ static zval * get_num_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, unsigned 
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 		ZVAL_NULL(val);
+		
 		return val;
 	}
+	
 	val = u16to8((SAP_UC *)buffer);
 	free(buffer);
 
@@ -639,12 +648,14 @@ static zval * get_bcd_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 		ZVAL_NULL(val);
+		
 		return val;
 	}
 
 	val = u16to8c((SAP_UC *)buffer, retStrLen);
 	free(buffer);
 	// XXX need to convert this to a float
+
 	return val;
 }
 
@@ -666,8 +677,10 @@ static zval * get_char_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, unsigned
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 		ZVAL_NULL(val);
+		
 		return val;
 	}
+	
 	val = u16to8((SAP_UC *)buffer);
 	free(buffer);
 
@@ -691,8 +704,10 @@ static zval * get_byte_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, unsigned
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 		ZVAL_NULL(val);
+		
 		return val;
 	}
+	
 	val = make_stringcl(buffer, len);
 	free(buffer);
 
@@ -718,6 +733,7 @@ static zval * get_structure_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 		ZVAL_NULL(val);
+		
 		return val;
 	}
 
@@ -729,6 +745,7 @@ static zval * get_structure_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 		ZVAL_NULL(val);
+		
 		return val;
 	}
 
@@ -740,6 +757,7 @@ static zval * get_structure_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 		ZVAL_NULL(val);
+		
 		return val;
 	}
 
@@ -754,6 +772,7 @@ static zval * get_structure_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 										u16to8(errorInfo.key),
 										u16to8(errorInfo.message));
 			ZVAL_NULL(val);
+			
 			return val;
 		}
 
@@ -816,6 +835,7 @@ static zval * get_field_value(DATA_CONTAINER_HANDLE hcont, RFC_FIELD_DESC fieldD
 										u16to8(errorInfo.key),
 										u16to8(errorInfo.message));
 			ZVAL_NULL(pvalue);
+			
 			return pvalue;
 		  }
 		  pvalue = get_table_value(tableHandle, fieldDesc.name);
@@ -856,6 +876,7 @@ static zval * get_table_line(RFC_STRUCTURE_HANDLE line){
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 		ZVAL_NULL(val);
+		
 		return val;
 	}
 
@@ -866,11 +887,13 @@ static zval * get_table_line(RFC_STRUCTURE_HANDLE line){
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 		ZVAL_NULL(val);
+		
 		return val;
 	}
 
 	ALLOC_INIT_ZVAL(val);
 	array_init(val);
+	
 	for (i = 0; i < fieldCount; i++) {
 		rc = RfcGetFieldDescByIndex(typeHandle, i, &fieldDesc, &errorInfo);
 		if (rc != RFC_OK) {
@@ -879,6 +902,7 @@ static zval * get_table_line(RFC_STRUCTURE_HANDLE line){
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 			ZVAL_NULL(val);
+			
 			return val;
 		}
 
@@ -906,16 +930,20 @@ static zval * get_table_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
 								u16to8(errorInfo.key),
 								u16to8(errorInfo.message));
 		ZVAL_NULL(val);
+		
 		return val;
 	}
+	
 	ALLOC_INIT_ZVAL(val);
 	array_init(val);
 	for (r = 0; r < tabLen; r++){
 		RfcMoveTo(hcont, r, NULL);
 		line = RfcGetCurrentRow(hcont, NULL);
 		add_next_index_zval(val, get_table_line(line));
+		
 		if (sapnwrfc_global_error) {
 			ZVAL_NULL(val);
+			
 			return val;
 		}
 	}
@@ -945,6 +973,7 @@ static zval * get_parameter_value(zval * name, RFC_FUNCTION_HANDLE funcHandle, R
 								u16to8(errorInfo.key),
 								u16to8(errorInfo.message));
 		ZVAL_NULL(pvalue);
+		
 		return pvalue;
 	}
 
@@ -992,6 +1021,7 @@ static zval * get_parameter_value(zval * name, RFC_FUNCTION_HANDLE funcHandle, R
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 				ZVAL_NULL(pvalue);
+				
 				return pvalue;
 			}
 			pvalue = get_table_value(tableHandle, p_name);
@@ -1011,7 +1041,9 @@ static zval * get_parameter_value(zval * name, RFC_FUNCTION_HANDLE funcHandle, R
 			exit(1);
 			break;
 	}
+	
 	free(p_name);
+	
 	return pvalue;
 }
 
@@ -1025,12 +1057,16 @@ void set_date_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value){
 
 	if (Z_TYPE_P(value) != IS_STRING){
 		SAPNW_rfc_call_error1("RfcSetDate invalid Input value type:", Z_STRVAL_P(u16to8(name)));
+		
 		return;
 	}
+	
 	if (Z_STRLEN_P(value) != 8) {
 		SAPNW_rfc_call_error1("RfcSetDate invalid date format:", Z_STRVAL_P(value));
+		
 		return;
 	}
+	
 	p_value = u8to16(value);
 	memcpy((char *)date_value+0, (char *)p_value, 16);
 	free(p_value);
@@ -1043,6 +1079,7 @@ void set_date_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value){
 								u16to8(errorInfo.key),
 								u16to8(errorInfo.message));
 	}
+	
 	return;
 }
 
@@ -1056,12 +1093,16 @@ void set_time_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value){
 
 	if (Z_TYPE_P(value) != IS_STRING){
 		SAPNW_rfc_call_error1("RfcSetTime invalid Input value type:", Z_STRVAL_P(u16to8(name)));
+		
 		return;
 	}
+	
 	if (Z_STRLEN_P(value) != 6) {
 		SAPNW_rfc_call_error1("RfcSetTime invalid date format:", Z_STRVAL_P(value));
+		
 		return;
 	}
+	
 	p_value = u8to16(value);
 	memcpy((char *)time_value+0, (char *)p_value, 12);
 	free(p_value);
@@ -1074,6 +1115,7 @@ void set_time_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value){
 								u16to8(errorInfo.key),
 								u16to8(errorInfo.message));
 	}
+	
 	return;
 }
 
@@ -1086,10 +1128,13 @@ void set_num_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value, unsi
 
 	if (Z_TYPE_P(value) != IS_STRING){
 		SAPNW_rfc_call_error1("RfcSetNum invalid Input value type: ", Z_STRVAL_P(u16to8(name)));
+		
 		return;
 	}
+	
 	if (Z_STRLEN_P(value) > max) {
 		SAPNW_rfc_call_error1("RfcSetNum string too long: ", Z_STRVAL_P(value));
+		
 		return;
 	}
 
@@ -1102,8 +1147,10 @@ void set_num_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value, unsi
 								errorInfo.code,
 								u16to8(errorInfo.key),
 								u16to8(errorInfo.message));
+								
 		return;
 	}
+	
 	return;
 }
 
@@ -1129,8 +1176,10 @@ void set_bcd_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value){
 								errorInfo.code,
 								u16to8(errorInfo.key),
 								u16to8(errorInfo.message));
+								
 		return;
 	}
+	
 	return;
 }
 
@@ -1143,10 +1192,13 @@ void set_char_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value, uns
 
 	if (Z_TYPE_P(value) != IS_STRING){
     	SAPNW_rfc_call_error1("RfcSetChar invalid Input value type: ", Z_STRVAL_P(u16to8(name)));
+    	
 		return;
 	}
+	
 //	if (Z_STRLEN_P(value) > max) {
 //		SAPNW_rfc_call_error1("RfcSetChar string too long: ", Z_STRVAL_P(u16to8(name)));
+
 //		return;
 //	}
 
@@ -1159,8 +1211,10 @@ void set_char_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value, uns
 								errorInfo.code,
 								u16to8(errorInfo.key),
 								u16to8(errorInfo.message));
+								
 		return;
 	}
+	
 	return;
 }
 
@@ -1172,12 +1226,16 @@ void set_byte_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value, uns
 
 	if (Z_TYPE_P(value) != IS_STRING){
 		SAPNW_rfc_call_error1("RfcSetByte invalid Input value type: ", Z_STRVAL_P(u16to8(name)));
+		
 		return;
 	}
+	
 	if (Z_STRLEN_P(value) > max) {
 		SAPNW_rfc_call_error1("RfcSetByte string too long:", Z_STRVAL_P(value));
+		
 		return;
 	}
+	
 	rc = RfcSetBytes(hcont, name, (SAP_RAW *)Z_STRVAL_P(value), Z_STRLEN_P(value), &errorInfo);
 	if (rc != RFC_OK) {
 		SAPNW_rfc_call_error(my_concatc2c("Problem with RfcSetBytes: ",
@@ -1185,8 +1243,10 @@ void set_byte_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value, uns
 								errorInfo.code,
 								u16to8(errorInfo.key),
 								u16to8(errorInfo.message));
+								
 		return;
 	}
+	
 	return;
 }
 
@@ -1198,8 +1258,10 @@ void set_float_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value){
 
 	if (Z_TYPE_P(value) != IS_DOUBLE){
 		SAPNW_rfc_call_error1("RfcSetFloat invalid Input value type: ", Z_STRVAL_P(u16to8(name)));
+		
 		return;
 	}
+	
 	rc = RfcSetFloat(hcont, name, (RFC_FLOAT) Z_DVAL_P(value), &errorInfo);
 	if (rc != RFC_OK) {
 		SAPNW_rfc_call_error(my_concatc2c("Problem with RfcSetFloat: ",
@@ -1207,8 +1269,10 @@ void set_float_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value){
 								errorInfo.code,
 								u16to8(errorInfo.key),
 								u16to8(errorInfo.message));
+								
 		return;
 	}
+	
 	return;
 }
 
@@ -1220,15 +1284,19 @@ void set_int_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value){
 
 	if (Z_TYPE_P(value) != IS_LONG){
 		SAPNW_rfc_call_error1("RfcSetInt invalid Input value type: ", Z_STRVAL_P(u16to8(name)));
+		
 		return;
 	}
+	
 	rc = RfcSetInt(hcont, name, (RFC_INT) Z_LVAL_P(value), &errorInfo);
+	
 	if (rc != RFC_OK) {
 		SAPNW_rfc_call_error(my_concatc2c("Problem with RfcSetInt: ",
 								Z_STRVAL_P(u16to8(name))),
 								errorInfo.code,
 								u16to8(errorInfo.key),
 								u16to8(errorInfo.message));
+								
 		return;
 	}
 
@@ -1243,21 +1311,28 @@ void set_int1_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value){
 
 	if (Z_TYPE_P(value) != IS_LONG){
 		SAPNW_rfc_call_error1("RfcSetInt1 invalid Input value type: ", Z_STRVAL_P(u16to8(name)));
+		
 		return;
 	}
+	
 	if (Z_LVAL_P(value) > 255){
 		SAPNW_rfc_call_error1("RfcSetInt1 invalid Input value too big on: ", Z_STRVAL_P(u16to8(name)));
+		
 		return;
 	}
+	
 	rc = RfcSetInt1(hcont, name, (RFC_INT1) Z_LVAL_P(value), &errorInfo);
+	
 	if (rc != RFC_OK) {
 		SAPNW_rfc_call_error(my_concatc2c("Problem with RfcSetInt1: ",
 								Z_STRVAL_P(u16to8(name))),
 								errorInfo.code,
 								u16to8(errorInfo.key),
 								u16to8(errorInfo.message));
+		
 		return;
 	}
+	
 	return;
 }
 
@@ -1269,21 +1344,28 @@ void set_int2_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value){
 
 	if (Z_TYPE_P(value) != IS_LONG){
 		SAPNW_rfc_call_error1("RfcSetInt2 invalid Input value type: ", Z_STRVAL_P(u16to8(name)));
+		
 		return;
 	}
+	
 	if (Z_LVAL_P(value) > 4095){
 		SAPNW_rfc_call_error1("RfcSetInt2 invalid Input value too big on: ", Z_STRVAL_P(u16to8(name)));
+		
 		return;
 	}
+	
 	rc = RfcSetInt2(hcont, name, (RFC_INT2) Z_LVAL_P(value), &errorInfo);
+	
 	if (rc != RFC_OK) {
 		SAPNW_rfc_call_error(my_concatc2c("Problem with RfcSetInt2: ",
 								Z_STRVAL_P(u16to8(name))),
 								errorInfo.code,
 								u16to8(errorInfo.key),
 								u16to8(errorInfo.message));
+		
 		return;
 	}
+	
 	return;
 }
 
@@ -1296,20 +1378,24 @@ void set_string_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value){
 
 	if (Z_TYPE_P(value) != IS_STRING){
 		SAPNW_rfc_call_error1("RfcSetString invalid Input value type: ", Z_STRVAL_P(u16to8(name)));
+		
 		return;
 	}
 
 	p_value = u8to16(value);
 	rc = RfcSetString(hcont, name, p_value, strlenU(p_value), &errorInfo);
 	free(p_value);
+	
 	if (rc != RFC_OK) {
 		SAPNW_rfc_call_error(my_concatc2c("Problem with RfcSetString: ",
 								Z_STRVAL_P(u16to8(name))),
 								errorInfo.code,
 								u16to8(errorInfo.key),
 								u16to8(errorInfo.message));
+		
 		return;
 	}
+	
 	return;
 }
 
@@ -1321,6 +1407,7 @@ void set_xstring_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value){
 
 	if (Z_TYPE_P(value) != IS_STRING){
 		SAPNW_rfc_call_error1("RfcSetXString invalid Input value type: ", Z_STRVAL_P(u16to8(name)));
+		
 		return;
 	}
 
@@ -1331,8 +1418,10 @@ void set_xstring_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value){
 								errorInfo.code,
 								u16to8(errorInfo.key),
 								u16to8(errorInfo.message));
+		
 		return;
 	}
+	
 	return;
 }
 
@@ -1359,7 +1448,6 @@ void set_structure_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value
 	}
 
 	arr_hash = Z_ARRVAL_P(value);
-	// idx = zend_hash_num_elements(arr_hash);
 
 	rc = RfcGetStructure(hcont, name, &line, &errorInfo);
 	if (rc != RFC_OK) {
@@ -1368,6 +1456,7 @@ void set_structure_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value
 								errorInfo.code,
 								u16to8(errorInfo.key),
 								u16to8(errorInfo.message));
+		
 		return;
 	}
 
@@ -1378,6 +1467,7 @@ void set_structure_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value
 								errorInfo.code,
 								u16to8(errorInfo.key),
 								u16to8(errorInfo.message));
+		
 		return;
 	}
 
@@ -1387,24 +1477,31 @@ void set_structure_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value
 			zend_error(E_ERROR, "RfcSetStructure all structure keys must be strings");
 			return;
 		}
-		  rc = RfcGetFieldDescByName(typeHandle, (p_name = u8to16c(str_index)), &fieldDesc, &errorInfo);
+		
+		rc = RfcGetFieldDescByName(typeHandle, (p_name = u8to16c(str_index)), &fieldDesc, &errorInfo);
+		
 		if (rc != RFC_OK) {
 			SAPNW_rfc_call_error(my_concatc2c("Problem with RfcGetFieldDescByName: ",
 									str_index),
 									errorInfo.code,
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
+									
 			return;
 		}
+		
 		// XXX bad copy
 		memcpy(fieldDesc.name, p_name, strlenU(p_name)*2+2);
 		free(p_name);
 		set_field_value(line, fieldDesc, *data);
+		
 		if (sapnwrfc_global_error) {
 			return;
 		}
+		
 		i++;
 	}
+	
 	return;
 }
 
@@ -1500,8 +1597,8 @@ void set_table_line(RFC_STRUCTURE_HANDLE line, zval * value){
 		SAPNW_rfc_call_error1("set_table_line invalid Input value type", "");
 		return;
 	}
+	
 	arr_hash = Z_ARRVAL_P(value);
-	// idx = zend_hash_num_elements(arr_hash);
 
 	typeHandle = RfcDescribeType(line, &errorInfo);
 	if (typeHandle == NULL) {
@@ -1509,32 +1606,41 @@ void set_table_line(RFC_STRUCTURE_HANDLE line, zval * value){
 								errorInfo.code,
 								u16to8(errorInfo.key),
 								u16to8(errorInfo.message));
+								
 		return;
 	}
 
 	i = 0;
 	for(zend_hash_internal_pointer_reset_ex(arr_hash, &pointer); zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS; zend_hash_move_forward_ex(arr_hash, &pointer)) {
+		
 		if (zend_hash_get_current_key_ex (arr_hash, &str_index, &str_length, &num_index, 0, &pointer) != HASH_KEY_IS_STRING) {
 			zend_error(E_ERROR, "RfcSetStructure all structure keys must be strings");
 		}
-		  rc = RfcGetFieldDescByName(typeHandle, (p_name = u8to16c(str_index)), &fieldDesc, &errorInfo);
+		
+		rc = RfcGetFieldDescByName(typeHandle, (p_name = u8to16c(str_index)), &fieldDesc, &errorInfo);
+		
 		if (rc != RFC_OK) {
 			SAPNW_rfc_call_error(my_concatc2c("(set_table_line)Problem with RfcGetFieldDescByName: ",
 									Z_STRVAL_P(u16to8(fieldDesc.name))),
 									errorInfo.code,
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
+									
 			return;
 		}
+		
 		// XXX bad copy
 		memcpy(fieldDesc.name, p_name, strlenU(p_name)*2+2);
 		free(p_name);
 		set_field_value(line, fieldDesc, *data);
+		
 		if (sapnwrfc_global_error) {
 			return;
 		}
+		
 		i++;
 	}
+	
 	return;
 }
 
@@ -1549,8 +1655,10 @@ void set_table_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value){
 
 	if (Z_TYPE_P(value) != IS_ARRAY){
 		SAPNW_rfc_call_error1("set_table invalid Input value type:", Z_STRVAL_P(u16to8(name)));
+		
 		return;
 	}
+	
 	arr_hash = Z_ARRVAL_P(value);
 
 	for(zend_hash_internal_pointer_reset_ex(arr_hash, &pointer); zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS; zend_hash_move_forward_ex(arr_hash, &pointer)) {
@@ -1561,13 +1669,17 @@ void set_table_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, zval * value){
 									errorInfo.code,
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
+									
 			return;
 		}
+		
 		set_table_line(line, *data);
+		
 		if (sapnwrfc_global_error) {
 			return;
 		}
 	}
+	
 	return;
 }
 
@@ -1595,6 +1707,7 @@ void set_parameter_value(RFC_FUNCTION_HANDLE funcHandle, RFC_FUNCTION_DESC_HANDL
 								errorInfo.code,
 								u16to8(errorInfo.key),
 								u16to8(errorInfo.message));
+		
 		return;
 	}
 
@@ -1659,6 +1772,7 @@ void set_parameter_value(RFC_FUNCTION_HANDLE funcHandle, RFC_FUNCTION_DESC_HANDL
 				exit(1);
 			  break;
 	}
+	
 	free(p_name);
 
 	return;
@@ -1674,7 +1788,6 @@ static void sapnwrfc_function_object_free_storage(void *object TSRMLS_DC) {
 	sapnwrfc_function_object *intern = (sapnwrfc_function_object *)object;
 
 	if (intern->handle != NULL) {
-		//  fprintf(stderr, "func_desc_handle_free: -> start %p\n", ptr);
 		rc = RfcDestroyFunctionDesc(intern->handle, &errorInfo);
 		intern->handle = NULL;
 		if (rc != RFC_OK) {
@@ -1719,14 +1832,11 @@ static zend_object_value sapnwrfc_function_object_new_ex(zend_class_entry *class
 
 	ALLOC_HASHTABLE(intern->std.properties);
 	zend_hash_init(intern->std.properties, 0, NULL, ZVAL_PTR_DTOR, 0);
-	#if PHP_VERSION_ID < 50399
-	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
-    #else
     object_properties_init(&(intern->std), class_type);
-    #endif
 
 	retval.handle = zend_objects_store_put(intern, NULL, (zend_objects_free_object_storage_t) sapnwrfc_function_object_free_storage, NULL TSRMLS_CC);
 	retval.handlers = &sapnwrfc_function_handlers;
+	
 	return retval;
 }
 /* }}} */
@@ -1736,6 +1846,7 @@ static zend_object_value sapnwrfc_function_object_new_ex(zend_class_entry *class
 /* See sapnwrfc_function_object_new_ex */
 static zend_object_value sapnwrfc_function_object_new(zend_class_entry *class_type TSRMLS_DC) {
 	sapnwrfc_function_object *tmp;
+	
 	return sapnwrfc_function_object_new_ex(class_type, &tmp TSRMLS_CC);
 }
 /* }}} */
@@ -1762,6 +1873,7 @@ static zend_object_value sapnwrfc_function_object_clone(zval *zobject TSRMLS_DC)
 	new_obj_val = sapnwrfc_function_object_new_ex(old_object->ce, &intern TSRMLS_CC);
 	new_object = &intern->std;
 	zend_objects_clone_members(new_object, new_obj_val, old_object, handle TSRMLS_CC);
+	
 	return new_obj_val;
 }
 /* }}} */
@@ -1827,14 +1939,11 @@ static zend_object_value sapnwrfc_object_new_ex(zend_class_entry *class_type, sa
 
 	ALLOC_HASHTABLE(intern->std.properties);
 	zend_hash_init(intern->std.properties, 0, NULL, ZVAL_PTR_DTOR, 0);
-	#if PHP_VERSION_ID < 50399
-	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
-    #else
     object_properties_init(&(intern->std), class_type);
-    #endif
 
 	retval.handle = zend_objects_store_put(intern, NULL, (zend_objects_free_object_storage_t) sapnwrfc_object_free_storage, NULL TSRMLS_CC);
 	retval.handlers = &sapnwrfc_handlers;
+	
 	return retval;
 }
 /* }}} */
@@ -1844,6 +1953,7 @@ static zend_object_value sapnwrfc_object_new_ex(zend_class_entry *class_type, sa
 /* See sapnwrfc_object_new_ex */
 static zend_object_value sapnwrfc_object_new(zend_class_entry *class_type TSRMLS_DC) {
 	sapnwrfc_object *tmp;
+	
 	return sapnwrfc_object_new_ex(class_type, &tmp TSRMLS_CC);
 }
 /* }}} */
@@ -1882,10 +1992,10 @@ static void sapnwrfc_open(sapnwrfc_object* intern, zval *connection_parameters T
 		convert_to_string_ex(data);
 		loginParams[i].name = (SAP_UC *) u8to16c(str_index);
 		loginParams[i].value = (SAP_UC *) u8to16(*data);
-//	            PHPWRITE(Z_STRVAL_PP(data), Z_STRLEN_PP(data));
-//	            php_printf(" ");
-		 i++;
+		
+        i++;
 	}
+	
 	intern->handle = RfcOpenConnection(loginParams, idx, &errorInfo);
 
 	if (intern->handle == NULL) {
@@ -1898,8 +2008,7 @@ static void sapnwrfc_open(sapnwrfc_object* intern, zval *connection_parameters T
 						   errorInfo.code,
 						   u16to8(errorInfo.key),
 						   u16to8(errorInfo.message));
-	}
-	else {
+	} else {
 		intern->connection_parameters = connection_parameters;
 	}
 }
@@ -1962,12 +2071,14 @@ PHP_METHOD(sapnwrfc, __construct) {
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &connection_parameters, &len) == FAILURE) {
 		zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
+		
 		return;
 	}
 
 	// must be an array
 	if (Z_TYPE_P(connection_parameters) != IS_ARRAY) {
 		zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
+		
 		return;
 	}
 
@@ -1998,6 +2109,7 @@ PHP_METHOD(sapnwrfc, connection_attributes) {
 						   errorInfo.code,
 						   u16to8(errorInfo.key),
 						   u16to8(errorInfo.message));
+						   
 		RETURN_NULL();
 	}
 
@@ -2048,11 +2160,13 @@ PHP_METHOD(sapnwrfc, close) {
 								errorInfo.code,
 								u16to8(errorInfo.key),
 								u16to8(errorInfo.message));
+								
 		  RETURN_NULL();
 		}
 	}
 
 	zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
+	
 	RETURN_TRUE;
 }
 /* }}} */
@@ -2069,13 +2183,15 @@ PHP_METHOD(sapnwrfc, ping) {
 
 	if (intern->handle != NULL) {
 		rc = RfcPing(intern->handle, &errorInfo);
+		
 		if (rc != RFC_OK) {
 		  RETURN_NULL();
 		}
-	}
-	else {
+		
+	} else {
 		  RETURN_NULL();
 	}
+	
 	RETURN_TRUE;
 }
 /* }}} */
@@ -2095,9 +2211,9 @@ PHP_METHOD(sapnwrfc, get_sso_ticket) {
 	sapnwrfc_global_error = false;
 
 	if (intern->handle != NULL) {
-		 //DECL_EXP RFC_RC SAP_API RfcGetPartnerSSOTicket(RFC_CONNECTION_HANDLE rfcHandle, SAP_UC *ssoTicket, unsigned *length, RFC_ERROR_INFO* errorInfo);
 
 		rc = RfcGetPartnerSSOTicket(intern->handle, ssoTicket, &length, &errorInfo);
+		
 		if (rc != RFC_OK) {
 			SAPNW_rfc_conn_error("Problem in RfcGetPartnerSSOTicket: ",
 							   errorInfo.code,
@@ -2105,10 +2221,10 @@ PHP_METHOD(sapnwrfc, get_sso_ticket) {
 							   u16to8(errorInfo.message));
 			RETURN_NULL();
 		}
+	} else {
+        RETURN_NULL();
 	}
-	else {
-		  RETURN_NULL();
-	}
+	
 	RETURN_STRING(Z_STRVAL_P(u16to8c(ssoTicket, length)), 1);
 }
 /* }}} */
@@ -2150,6 +2266,7 @@ PHP_METHOD(sapnwrfc, function_lookup) {
 						   errorInfo.code,
 						   u16to8(errorInfo.key),
 						   u16to8(errorInfo.message));
+					   
 		RETURN_NULL();
 	}
 
@@ -2170,6 +2287,7 @@ PHP_METHOD(sapnwrfc, function_lookup) {
 						   errorInfo.code,
 						   u16to8(errorInfo.key),
 						   u16to8(errorInfo.message));
+						   
 		RETURN_NULL();
 	}
 
@@ -2181,6 +2299,7 @@ PHP_METHOD(sapnwrfc, function_lookup) {
 							   errorInfo.code,
 							   u16to8(errorInfo.key),
 							   u16to8(errorInfo.message));
+							   
 			RETURN_NULL();
 		}
 		MAKE_STD_ZVAL(array);
@@ -2247,12 +2366,14 @@ PHP_METHOD(sapnwrfc_function, invoke) {
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &function_parameters, &len) == FAILURE) {
 		zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
+		
 		return;
 	}
 
 	// must be an array
 	if (Z_TYPE_P(function_parameters) != IS_ARRAY) {
 		zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
+		
 		return;
 	}
 
@@ -2265,6 +2386,7 @@ PHP_METHOD(sapnwrfc_function, invoke) {
 						   errorInfo.code,
 						   u16to8(errorInfo.key),
 						   u16to8(errorInfo.message));
+						   
 		RETURN_NULL();
 	}
 
@@ -2277,6 +2399,7 @@ PHP_METHOD(sapnwrfc_function, invoke) {
 						   errorInfo.code,
 						   u16to8(errorInfo.key),
 						   u16to8(errorInfo.message));
+						   
 		RETURN_NULL();
 	}
 
@@ -2288,13 +2411,13 @@ PHP_METHOD(sapnwrfc_function, invoke) {
 							   errorInfo.code,
 							   u16to8(errorInfo.key),
 							   u16to8(errorInfo.message));
+							   
 			RETURN_NULL();
 		}
 		parm_name = u16to8(paramDesc.name);
 		if (zend_is_true(zend_read_property(sapnwrfc_function_ce, object, Z_STRVAL_P(parm_name), Z_STRLEN_P(parm_name), TRUE TSRMLS_CC))) {
 			rc = RfcSetParameterActive(func_handle, paramDesc.name, TRUE, &errorInfo);
-		}
-		else {
+		} else {
 			rc = RfcSetParameterActive(func_handle, paramDesc.name, FALSE, &errorInfo);
 		}
 	}
@@ -2321,6 +2444,7 @@ PHP_METHOD(sapnwrfc_function, invoke) {
 							   u16to8(errorInfo.key),
 							   u16to8(errorInfo.message));
 			rc = RfcDestroyFunction(func_handle, &errorInfo);
+			
 			RETURN_NULL();
 		}
 
@@ -2372,6 +2496,7 @@ PHP_METHOD(sapnwrfc_function, invoke) {
 		}
 		if (sapnwrfc_global_error) {
 			rc = RfcDestroyFunction(func_handle, &errorInfo);
+			
 			RETURN_NULL();
 		}
 	}
@@ -2386,6 +2511,7 @@ PHP_METHOD(sapnwrfc_function, invoke) {
 								u16to8(errorInfo.key),
 								u16to8(errorInfo.message));
 		rc = RfcDestroyFunction(func_handle, &errorInfo);
+		
 		RETURN_NULL();
 	}
 
@@ -2400,6 +2526,7 @@ PHP_METHOD(sapnwrfc_function, invoke) {
 									u16to8(errorInfo.key),
 									u16to8(errorInfo.message));
 		rc = RfcDestroyFunction(func_handle, &errorInfo);
+		
 		RETURN_NULL();
 	}
 
@@ -2461,10 +2588,6 @@ PHP_METHOD(sapnwrfc_function, invoke) {
 
 	rc = RfcDestroyFunction(func_handle, &errorInfo);
 	if (rc != RFC_OK) {
-//		fprintfU(stderr, cU("RfcDestroyFunction: %d - %s - %s\n"),
-//							 errorInfo.code,
-//							 u16to8(errorInfo.key),
-//							 u16to8(errorInfo.message));
 		SAPNW_rfc_call_error("Problem destroying RfcDestroyFunction handle",
 							errorInfo.code,
 							u16to8(errorInfo.key),
@@ -2508,6 +2631,7 @@ PHP_METHOD(sapnwrfc_function, activate) {
 						   errorInfo.code,
 						   u16to8(errorInfo.key),
 						   u16to8(errorInfo.message));
+		
 		RETURN_NULL();
 	}
 
@@ -2550,6 +2674,7 @@ PHP_METHOD(sapnwrfc_function, deactivate) {
 						   errorInfo.code,
 						   u16to8(errorInfo.key),
 						   u16to8(errorInfo.message));
+		
 		RETURN_NULL();
 	}
 
@@ -2621,17 +2746,18 @@ PHP_FUNCTION(sapnwrfc_setinipath) {
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &ini_path, &len) == FAILURE) {
 		zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
+		
 		return;
 	}
 
 	rc = RfcSetIniPath((pname = u8to16c(ini_path)), &errorInfo);
 	free((char *)pname);
 	if (rc != RFC_OK) {
-	  SAPNW_rfc_conn_error("Problem setting the INI path ",
+        SAPNW_rfc_conn_error("Problem setting the INI path ",
 							errorInfo.code,
 							u16to8(errorInfo.key),
 							u16to8(errorInfo.message));
-	  RETURN_NULL();
+        RETURN_NULL();
 	}
 
 	RETURN_TRUE;
@@ -2676,32 +2802,34 @@ PHP_FUNCTION(sapnwrfc_removefunction) {
 		zend_replace_error_handling(EH_NORMAL, NULL, NULL TSRMLS_CC);
 		return;
 	}
+	
 	if (len_name < 1) {
-	  SAPNW_rfc_call_error1("Incorrect parameters supplied for remove_function ", "");
+        SAPNW_rfc_call_error1("Incorrect parameters supplied for remove_function ", "");
     }
+    
 	rc = RfcRemoveFunctionDesc(NULL, (pname = u8to16c(name)), &errorInfo);
+	
     if (len_sysid > 0) {
 	  rc = RfcRemoveFunctionDesc((psysid = u8to16c(sysid)), pname, &errorInfo);
 	  fprintfU(stderr, cU("repId: [%s] function: [%s]\n"), psysid, pname);
 	  free((char *)psysid);
 	}
+	
 	free((char *)pname);
+	
 	if (rc != RFC_OK) {
-	  SAPNW_rfc_call_error("Problem removing function description from the cache ",
+        SAPNW_rfc_call_error("Problem removing function description from the cache ",
 							errorInfo.code,
 							u16to8(errorInfo.key),
 							u16to8(errorInfo.message));
-	  RETURN_NULL();
+        
+        RETURN_NULL();
 	}
 
 	RETURN_TRUE;
 }
 /* }}} */
 
-
-/* If you declare any globals in php_sapnwrfc.h uncomment this:
-ZEND_DECLARE_MODULE_GLOBALS(sapnwrfc)
-*/
 
 /* {{{ sapnwrfc_functions[]
  *
@@ -2714,56 +2842,35 @@ zend_function_entry sapnwrfc_functions[] = {
 	PHP_FE(sapnwrfc_setinipath,    NULL)
 	PHP_FE(sapnwrfc_reloadinifile,    NULL)
     PHP_FE(sapnwrfc_removefunction,   NULL)
-	{NULL, NULL, NULL}	/* Must be the last line in sapnwrfc_functions[] */
+	PHP_FE_END
 };
 /* }}} */
+
 
 /* {{{ sapnwrfc_module_entry
  */
 zend_module_entry sapnwrfc_module_entry = {
-#if ZEND_MODULE_API_NO >= 20010901
 	STANDARD_MODULE_HEADER,
-#endif
 	"sapnwrfc",
 	sapnwrfc_functions,
 	PHP_MINIT(sapnwrfc),
 	PHP_MSHUTDOWN(sapnwrfc),
-	PHP_RINIT(sapnwrfc),		/* Replace with NULL if there's nothing to do at request start */
-	PHP_RSHUTDOWN(sapnwrfc),	/* Replace with NULL if there's nothing to do at request end */
+	NULL,
+	NULL,
 	PHP_MINFO(sapnwrfc),
-#if ZEND_MODULE_API_NO >= 20010901
-	"0.1", /* Replace with version number for your extension */
-#endif
+	PHP_SAPNWRFC_VERSION
 	STANDARD_MODULE_PROPERTIES
 };
 /* }}} */
+
 
 #ifdef COMPILE_DL_SAPNWRFC
 ZEND_GET_MODULE(sapnwrfc)
 #endif
 
-/* {{{ PHP_INI
+
+/* {{{ PHP_MINIT_FUNCTION
  */
-/* Remove comments and fill if you need to have entries in php.ini
-PHP_INI_BEGIN()
-    STD_PHP_INI_ENTRY("sapnwrfc.global_value",      "42", PHP_INI_ALL, OnUpdateLong, global_value, zend_sapnwrfc_globals, sapnwrfc_globals)
-    STD_PHP_INI_ENTRY("sapnwrfc.global_string", "foobar", PHP_INI_ALL, OnUpdateString, global_string, zend_sapnwrfc_globals, sapnwrfc_globals)
-PHP_INI_END()
-*/
-/* }}} */
-
-/* {{{ php_sapnwrfc_init_globals
- */
-/* Uncomment this function if you have INI entries
-static void php_sapnwrfc_init_globals(zend_sapnwrfc_globals *sapnwrfc_globals)
-{
-	sapnwrfc_globals->global_value = 0;
-	sapnwrfc_globals->global_string = NULL;
-}
-*/
-/* }}} */
-
-
 PHP_MINIT_FUNCTION(sapnwrfc) {
 	zend_class_entry ce;
 	zend_class_entry ce_func;
@@ -2783,78 +2890,28 @@ PHP_MINIT_FUNCTION(sapnwrfc) {
 	sapnwrfc_function_handlers.clone_obj = sapnwrfc_function_object_clone;
 
 	INIT_CLASS_ENTRY(cex_conn, "sapnwrfcConnectionException", sapnwrfc_connection_exception_class_functions);
-#ifdef HAVE_SPL
 	sapnwrfc_connection_exception_ce = zend_register_internal_class_ex(&cex_conn, spl_ce_RuntimeException, NULL TSRMLS_CC);
-#else
-	sapnwrfc_connection_exception_ce = zend_register_internal_class_ex(&cex_conn, zend_exception_get_default(TSRMLS_C), NULL TSRMLS_CC);
-#endif
 	sapnwrfc_connection_exception_ce->ce_flags |= ZEND_ACC_FINAL;
     zend_declare_property_long(sapnwrfc_connection_exception_ce, "code", sizeof("code")-1, 0, ZEND_ACC_PUBLIC TSRMLS_CC);
     zend_declare_property_string(sapnwrfc_connection_exception_ce, "key", sizeof("key")-1, "00000", ZEND_ACC_PUBLIC TSRMLS_CC);
 
 	INIT_CLASS_ENTRY(cex_call, "sapnwrfcCallException", sapnwrfc_call_exception_class_functions);
-#ifdef HAVE_SPL
 	sapnwrfc_call_exception_ce = zend_register_internal_class_ex(&cex_call, spl_ce_RuntimeException, NULL TSRMLS_CC);
-#else
-	sapnwrfc_call_exception_ce = zend_register_internal_class_ex(&cex_call, zend_exception_get_default(TSRMLS_C), NULL TSRMLS_CC);
-#endif
 	sapnwrfc_call_exception_ce->ce_flags |= ZEND_ACC_FINAL;
     zend_declare_property_long(sapnwrfc_call_exception_ce, "code", sizeof("code")-1, 0, ZEND_ACC_PUBLIC TSRMLS_CC);
     zend_declare_property_string(sapnwrfc_call_exception_ce, "key", sizeof("key")-1, "00000", ZEND_ACC_PUBLIC TSRMLS_CC);
 
-	/* If you have INI entries, uncomment these lines
-	ZEND_INIT_MODULE_GLOBALS(sapnwrfc, php_sapnwrfc_init_globals, NULL);
-	REGISTER_INI_ENTRIES();
-	*/
 	return SUCCESS;
 }
 /* }}} */
 
-/* {{{ PHP_MSHUTDOWN_FUNCTION
- */
-PHP_MSHUTDOWN_FUNCTION(sapnwrfc) {
-	/* uncomment this line if you have INI entries
-	UNREGISTER_INI_ENTRIES();
-	*/
-	return SUCCESS;
-}
-/* }}} */
-
-/* Remove if there's nothing to do at request start */
-/* {{{ PHP_RINIT_FUNCTION
- */
-PHP_RINIT_FUNCTION(sapnwrfc) {
-	return SUCCESS;
-}
-/* }}} */
-
-/* Remove if there's nothing to do at request end */
-/* {{{ PHP_RSHUTDOWN_FUNCTION
- */
-PHP_RSHUTDOWN_FUNCTION(sapnwrfc) {
-	return SUCCESS;
-}
-/* }}} */
 
 /* {{{ PHP_MINFO_FUNCTION
  */
 PHP_MINFO_FUNCTION(sapnwrfc) {
 	php_info_print_table_start();
-	php_info_print_table_header(2, "sapnwrfc support", "enabled");
+	php_info_print_table_row(2, "sapnwrfc support", "enabled");
+	php_info_print_table_row(2, "version", PHP_SAPNWRFC_VERSION);
 	php_info_print_table_end();
-
-	/* Remove comments if you have entries in php.ini
-	DISPLAY_INI_ENTRIES();
-	*/
 }
 /* }}} */
-
-
-/*
- * Local variables:
- * tab-width: 4
- * c-basic-offset: 4
- * End:
- * vim600: noet sw=4 ts=4 fdm=marker
- * vim<600: noet sw=4 ts=4
- */

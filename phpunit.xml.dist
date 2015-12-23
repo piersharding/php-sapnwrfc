@@ -1,0 +1,22 @@
+<phpunit 
+    colors="false"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    verbose="true"
+    stopOnFailure="false"
+    processIsolation="false"
+    backupGlobals="false"
+    syntaxCheck="true"
+>   
+    <testsuites>
+        <testsuite name="UnitTests Offline">
+            <directory suffix="Test.php">tests/Offline</directory>
+        </testsuite>
+        
+        <testsuite name="UnitTests Online">
+            <directory suffix="Test.php">tests/Online</directory>
+        </testsuite>
+    </testsuites>
+    
+</phpunit>

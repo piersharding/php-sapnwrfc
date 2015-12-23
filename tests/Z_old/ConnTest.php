@@ -8,41 +8,43 @@ global $SAP_CONFIG;
 class ConnTest extends PHPUnit_Framework_TestCase
 {
 
-    protected function setUp() {
+    protected function setUp()
+    {
         global $SAP_CONFIG;
         $this->config = Spyc::YAMLLoad($SAP_CONFIG);
         echo "sapnwrfc version: ".sapnwrfc_version()."\n";
         echo "nw rfc sdk version: ".sapnwrfc_rfcversion()."\n";
     }
     
-    public function testConnection() {
-       try {
+    public function testConnection()
+    {
+        try {
             $conn = new sapnwrfc($this->config);
             // we must have a valid connection
             $this->assertNotNull($conn);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             echo "Exception message: ".$e->getMessage();
             throw new Exception('Assertion failed.');
         }
     }
     
-    public function testConnectionAttr() {
-       try {
+    public function testConnectionAttr()
+    {
+        try {
             $conn = new sapnwrfc($this->config);
             // we must have a valid connection
             $this->assertNotNull($conn);
             $attr = $conn->connection_attributes();
             $this->assertEquals($attr['partnerHost'], 'gecko');
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             echo "Exception message: ".$e->getMessage();
             throw new Exception('Connection failed.');
         }
     }
     
-    public function testConnectionAttrLots() {
-       try {
+    public function testConnectionAttrLots()
+    {
+        try {
             $conn = new sapnwrfc($this->config);
             // we must have a valid connection
             $this->assertNotNull($conn);
@@ -50,15 +52,15 @@ class ConnTest extends PHPUnit_Framework_TestCase
                 $attr = $conn->connection_attributes();
                 $this->assertEquals($attr['partnerHost'], 'gecko');
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             echo "Exception message: ".$e->getMessage();
             throw new Exception('Connection failed.');
         }
     }
     
-    public function testConnectionAttrLots2() {
-       try {
+    public function testConnectionAttrLots2()
+    {
+        try {
             for ($i=0; $i<100; $i++) {
                 $conn = new sapnwrfc($this->config);
                 // we must have a valid connection
@@ -67,27 +69,25 @@ class ConnTest extends PHPUnit_Framework_TestCase
                 $this->assertEquals($attr['partnerHost'], 'gecko');
                 $this->assertNotNull($conn->close());
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             echo "Exception message: ".$e->getMessage();
             throw new Exception('Connection failed.');
         }
     }
     
-    public function testConnectionThrow() {
-       try {
+    public function testConnectionThrow()
+    {
+        try {
             $config = $this->config;
             $config['sysnr'] = sprintf('%02d', ((int) $config['sysnr']) + 1);
             $conn = new sapnwrfc($config);
-        }
-        catch (sapnwrfcConnectionException $e) {
+        } catch (sapnwrfcConnectionException $e) {
             echo "Exception type: ".$e."\n";
             echo "Exception key: ".$e->key."\n";
             echo "Exception code: ".$e->code."\n";
             echo "Exception message: ".$e->getMessage();
-            $this->assertTrue(TRUE);
-        }
-        catch (Exception $e) {
+            $this->assertTrue(true);
+        } catch (Exception $e) {
             echo "Exception type: ".$e."\n";
             echo "Exception key: ".$e->key."\n";
             echo "Exception code: ".$e->code."\n";
@@ -96,20 +96,19 @@ class ConnTest extends PHPUnit_Framework_TestCase
         }
     }
     
-    public function testConnectionThrow2() {
-       try {
+    public function testConnectionThrow2()
+    {
+        try {
             $conn = new sapnwrfc($this->config);
             $h = $conn->function_lookup('RFC_READ_TABLE');
             $h->invoke(array('DOES_NOT_EXIST' => 1));
-        }
-        catch (sapnwrfcCallException $e) {
+        } catch (sapnwrfcCallException $e) {
             echo "Exception type: ".$e."\n";
             echo "Exception key: ".$e->key."\n";
             echo "Exception code: ".$e->code."\n";
             echo "Exception message: ".$e->getMessage();
-            $this->assertTrue(TRUE);
-        }
-        catch (Exception $e) {
+            $this->assertTrue(true);
+        } catch (Exception $e) {
             echo "Exception type: ".$e."\n";
             echo "Exception key: ".$e->key."\n";
             echo "Exception code: ".$e->code."\n";
@@ -118,20 +117,19 @@ class ConnTest extends PHPUnit_Framework_TestCase
         }
     }
     
-    public function testConnectionThrow3() {
-       try {
+    public function testConnectionThrow3()
+    {
+        try {
             $conn = new sapnwrfc($this->config);
             $h = $conn->function_lookup('RFC_READ_TABLE');
             $h->invoke(array('DATA' => array(array('NOT_THERE' => 1))));
-        }
-        catch (sapnwrfcCallException $e) {
+        } catch (sapnwrfcCallException $e) {
             echo "Exception type: ".$e."\n";
             echo "Exception key: ".$e->key."\n";
             echo "Exception code: ".$e->code."\n";
             echo "Exception message: ".$e->getMessage();
-            $this->assertTrue(TRUE);
-        }
-        catch (Exception $e) {
+            $this->assertTrue(true);
+        } catch (Exception $e) {
             echo "Exception type: ".$e."\n";
             echo "Exception key: ".$e->key."\n";
             echo "Exception code: ".$e->code."\n";
@@ -140,13 +138,13 @@ class ConnTest extends PHPUnit_Framework_TestCase
         }
     }
    
-    public function testConnectionCert() {
-       try {
+    public function testConnectionCert()
+    {
+        try {
             $conn = new sapnwrfc($this->config);
             $ticket = $conn->get_sso_ticket();
             echo "ticket: $ticket \n";
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             echo "Exception type: ".$e."\n";
             echo "Exception key: ".$e->key."\n";
             echo "Exception code: ".$e->code."\n";

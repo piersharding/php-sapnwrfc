@@ -8,15 +8,17 @@ global $SAP_CONFIG;
 class FuncTest extends PHPUnit_Framework_TestCase
 {
 
-    protected function setUp() {
+    protected function setUp()
+    {
         global $SAP_CONFIG;
         $this->config = Spyc::YAMLLoad($SAP_CONFIG);
         echo "sapnwrfc version: ".sapnwrfc_version()."\n";
         echo "nw rfc sdk version: ".sapnwrfc_rfcversion()."\n";
     }
     
-    public function testFuncCall1() {
-       try {
+    public function testFuncCall1()
+    {
+        try {
             $conn = new sapnwrfc($this->config);
             // we must have a valid connection
             $this->assertNotNull($conn);
@@ -30,18 +32,17 @@ class FuncTest extends PHPUnit_Framework_TestCase
             $results = $func->invoke($parms);
             //var_dump($results);
           $this->assertEquals(count($results['DATA']), 50);
-          $this->assertEquals($conn->close(), true);
-            
-       }
-        catch (Exception $e) {
+            $this->assertEquals($conn->close(), true);
+        } catch (Exception $e) {
             echo "Exception message: ".$e->getMessage();
             throw new Exception('Assertion failed.');
         }
     }
     
     
-    public function testFuncCall2() {
-       try {
+    public function testFuncCall2()
+    {
+        try {
             for ($i=0; $i<100; $i++) {
                 //echo "iter: $i\n";
                 $conn = new sapnwrfc($this->config);
@@ -55,18 +56,17 @@ class FuncTest extends PHPUnit_Framework_TestCase
                 $this->assertEquals(count($results['DATA']), 50);
                 $this->assertEquals($conn->close(), true);
             }
-            
-       }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             echo "Exception message: ".$e->getMessage();
             throw new Exception('Assertion failed.');
         }
     }
     
     
-    public function testFuncCall3() {
-       echo "testFuncCall3\n";
-       try {
+    public function testFuncCall3()
+    {
+        echo "testFuncCall3\n";
+        try {
             $conn = new sapnwrfc($this->config);
             // we must have a valid connection
             $this->assertNotNull($conn);
@@ -80,18 +80,17 @@ class FuncTest extends PHPUnit_Framework_TestCase
                 $this->assertEquals(count($results['DATA']), 50);
             }
             $this->assertEquals($conn->close(), true);
-            
-       }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             echo "Exception message: ".$e->getMessage();
             throw new Exception('Assertion failed.');
         }
     }
     
     
-    public function testFuncCall4() {
-       echo "testFuncCall4\n";
-       try {
+    public function testFuncCall4()
+    {
+        echo "testFuncCall4\n";
+        try {
             $conn = new sapnwrfc($this->config);
             // we must have a valid connection
             $this->assertNotNull($conn);
@@ -104,34 +103,35 @@ class FuncTest extends PHPUnit_Framework_TestCase
                 $this->assertEquals(count($results['DATA']), 50);
             }
             $this->assertEquals($conn->close(), true);
-            
-       }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             echo "Exception message: ".$e->getMessage();
             throw new Exception('Assertion failed.');
         }
     }
 
-    static function str_hex($string){
+    public static function str_hex($string)
+    {
         $hex='';
-        for ($i=0; $i < strlen($string); $i++){
+        for ($i=0; $i < strlen($string); $i++) {
             $hex .= dechex(ord($string[$i]));
         }
         return $hex;
     }
 
 
-    static function hex_str($hex){
+    public static function hex_str($hex)
+    {
         $string='';
-        for ($i=0; $i < strlen($hex)-1; $i+=2){
+        for ($i=0; $i < strlen($hex)-1; $i+=2) {
             $string .= chr(hexdec($hex[$i].$hex[$i+1]));
         }
         return $string;
     }
 
-    public function testFuncDeepCall() {
-       echo "testFuncDeepCall\n";
-       try {
+    public function testFuncDeepCall()
+    {
+        echo "testFuncDeepCall\n";
+        try {
             $conn = new sapnwrfc($this->config);
             // we must have a valid connection
             $this->assertNotNull($conn);
@@ -164,8 +164,7 @@ class FuncTest extends PHPUnit_Framework_TestCase
                 }
             }
             $this->assertEquals($conn->close(), true);
-       }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             echo "Exception message: ".$e->getMessage();
             throw new Exception('Assertion failed.');
         }
