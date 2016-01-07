@@ -8,7 +8,8 @@ global $SAP_CONFIG;
 class FuncDataTest extends PHPUnit_Framework_TestCase
 {
 
-    protected function setUp() {
+    protected function setUp()
+    {
         global $SAP_CONFIG;
         $this->config = Spyc::YAMLLoad($SAP_CONFIG);
         echo "sapnwrfc version: ".sapnwrfc_version()."\n";
@@ -16,26 +17,29 @@ class FuncDataTest extends PHPUnit_Framework_TestCase
     }
     
     
-    static function str_hex($string){
+    public static function str_hex($string)
+    {
         $hex='';
-        for ($i=0; $i < strlen($string); $i++){
+        for ($i=0; $i < strlen($string); $i++) {
             $hex .= dechex(ord($string[$i]));
         }
         return $hex;
     }
 
 
-    static function hex_str($hex){
+    public static function hex_str($hex)
+    {
         $string='';
-        for ($i=0; $i < strlen($hex)-1; $i+=2){
+        for ($i=0; $i < strlen($hex)-1; $i+=2) {
             $string .= chr(hexdec($hex[$i].$hex[$i+1]));
         }
         return $string;
     }
 
-    public function testFuncDataCall1() {
-       echo "testFuncDataCall1\n";
-       try {
+    public function testFuncDataCall1()
+    {
+        echo "testFuncDataCall1\n";
+        try {
             $conn = new sapnwrfc($this->config);
             // we must have a valid connection
             $this->assertNotNull($conn);
@@ -43,13 +47,13 @@ class FuncDataTest extends PHPUnit_Framework_TestCase
             $this->assertEquals($func->name, "Z_TEST_DATA");
             for ($i=0; $i<100; $i++) {
                 $parms = array(
-                                'CHAR' => "German: öäüÖÄÜß", 
-                                'INT1' => 123, 
-                                'INT2' => 1234, 
-                                'INT4' => 123456, 
-                                'FLOAT' => 123456.00, 
-                                'NUMC' => "12345", 
-                                'DATE' => "20060709", 
+                                'CHAR' => "German: öäüÖÄÜß",
+                                'INT1' => 123,
+                                'INT2' => 1234,
+                                'INT4' => 123456,
+                                'FLOAT' => 123456.00,
+                                'NUMC' => "12345",
+                                'DATE' => "20060709",
                                 'TIME' => "200607",
                                 'BCD' =>  '200607.123',
                                 'ISTRUCT' => array( 'ZCHAR' => "German: öäüÖÄÜß", 'ZINT1' => 54, 'ZINT2' => 134, 'ZIT4' => 123456, 'ZFLT' => 123456.00, 'ZNUMC' => '12345', 'ZDATE' => '20060709', 'ZTIME' => '200607', 'ZBCD' => '200607.123'),
@@ -84,22 +88,22 @@ class FuncDataTest extends PHPUnit_Framework_TestCase
                 //echo "ESTRUCT: ", $results['ESTRUCT'];
                 //echo "DATA: ", $results['DATA'];
                 //echo "RESULTS: ", $results['RESULT'];
-				//echo "['EXPORT_TABLE'][0]['ZCHAR']: '", $results['EXPORT_TABLE'][0]['ZCHAR'], "'\n";
-				//echo "['EXPORT_TABLE'][1]['ZCHAR']: '", $results['EXPORT_TABLE'][1]['ZCHAR'], "'\n";
+                //echo "['EXPORT_TABLE'][0]['ZCHAR']: '", $results['EXPORT_TABLE'][0]['ZCHAR'], "'\n";
+                //echo "['EXPORT_TABLE'][1]['ZCHAR']: '", $results['EXPORT_TABLE'][1]['ZCHAR'], "'\n";
                 $this->assertEquals(chop($results['DATA'][0]['ZCHAR']), $parms['DATA'][0]['ZCHAR']);
                 $this->assertEquals(chop($results['DATA'][1]['ZCHAR']), $parms['DATA'][1]['ZCHAR']);
             }
             $this->assertEquals($conn->close(), true);
-       }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             echo "Exception message: ".$e->getMessage();
             throw new Exception('Assertion failed.');
         }
     }
 
-    public function testFuncChanging1() {
-       echo "testFuncChanging1\n";
-       try {
+    public function testFuncChanging1()
+    {
+        echo "testFuncChanging1\n";
+        try {
             $conn = new sapnwrfc($this->config);
             // we must have a valid connection
             $this->assertNotNull($conn);
@@ -107,7 +111,7 @@ class FuncDataTest extends PHPUnit_Framework_TestCase
             $this->assertEquals($func->name, "STFC_CHANGING");
             for ($i=0; $i<100; $i++) {
                 $cnt = (int) $i;
-                $parms = array('START_VALUE' => $cnt, 
+                $parms = array('START_VALUE' => $cnt,
                                'COUNTER' => $cnt);
 //                echo "start: $cnt count: $cnt \n";
                 $results = $func->invoke($parms);
@@ -116,12 +120,9 @@ class FuncDataTest extends PHPUnit_Framework_TestCase
                 $this->assertEquals((int)$results['COUNTER'], ($cnt + 1));
             }
             $this->assertEquals($conn->close(), true);
-       }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             echo "Exception message: ".$e->getMessage();
             throw new Exception('Assertion failed.');
         }
     }
 }
-
-?>
