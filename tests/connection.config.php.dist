@@ -1,0 +1,19 @@
+<?php
+return [
+    'MSHOST' => '...',
+    
+    'CLIENT' => '...',
+    
+    'R3NAME' => '...',
+    'GROUP' => '...',
+    
+    'CODEPAGE' => '...',
+    
+    'LANG' => 'en',
+    
+    'LCHECK' => true,
+    'TRACE' => true,
+    
+    'user' => '...',
+    'passwd' => '...'
+];
